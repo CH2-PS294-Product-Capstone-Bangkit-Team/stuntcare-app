@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Stunt Care</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_children">Children</string>
+    <string name="menu_consultation">Consultation</string>
+    <string name="menu_community">Community</string>
+    <string name="title_activity_home_page_screen">HomePageScreen</string>
 </resources>
