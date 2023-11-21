@@ -62,6 +62,7 @@ fun StuntCareTheme(
         }
     }
 
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
