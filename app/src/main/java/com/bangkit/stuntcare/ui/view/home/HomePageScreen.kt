@@ -1,4 +1,4 @@
-package com.bangkit.stuntcare.ui.view
+package com.bangkit.stuntcare.ui.view.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,11 +19,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,66 +34,69 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bangkit.stuntcare.R
+import com.bangkit.stuntcare.data.di.Injection
+import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ArticleItem
 import com.bangkit.stuntcare.ui.component.CardChild
 import com.bangkit.stuntcare.ui.component.MenuItem
+import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.model.dummyArticle
 import com.bangkit.stuntcare.ui.model.dummyMenu
+import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.view.ViewModelFactory
 
 @Composable
 fun HomePageScreen(
     modifier: Modifier = Modifier,
-    navigateToProfilePage: () -> Unit,
-    navigateToNotificationPage: () -> Unit,
-    navigateToChildPage: (Int) -> Unit,
-    navigateToMenu: (Int) -> Unit,
-    navigateToArticlePage: () -> Unit,
-    navigateToDetailArticle: (Long) -> Unit,
-    navigateToPostPage: () -> Unit,
-    navigateToDetailPostPage: (Long) -> Unit
-) {
-    HomePageContent(
-        navigateToProfile = navigateToProfilePage,
-        navigateToNotification = navigateToNotificationPage,
-        navigateToChildPage = navigateToChildPage,
-        navigateToMenu = navigateToMenu,
-        navigateToArticlePage = navigateToArticlePage,
-        navigateToDetailArticle = navigateToDetailArticle,
-        navigateToPostPage = navigateToPostPage,
-        navigateToDetailPostPage = navigateToDetailPostPage
+    homePageScreenNavigator: HomePageScreenNavigator,
+    viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = ViewModelFactory(
+            Injection.provideRepository()
+        )
     )
+) {
+    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
+        when (it) {
+            is UiState.Loading -> {
+                viewModel.getAllChildren()
+            }
+
+            is UiState.Success -> {
+                val data = it.data
+                HomePageContent(
+                    homePageScreenNavigator = homePageScreenNavigator,
+                    data = data
+                )
+            }
+
+            is UiState.Error -> {}
+        }
+    }
+
 }
 
 
 @Composable
 fun HomePageContent(
     modifier: Modifier = Modifier,
-    navigateToProfile: () -> Unit,
-    navigateToNotification: () -> Unit,
-    navigateToChildPage: (Int) -> Unit,
-    navigateToMenu: (Int) -> Unit,
-    navigateToArticlePage: () -> Unit,
-    navigateToDetailArticle: (Long) -> Unit,
-    navigateToPostPage: () -> Unit,
-    navigateToDetailPostPage: (Long) -> Unit
+    homePageScreenNavigator: HomePageScreenNavigator,
+    data: List<Children>
 ) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
         TopBarSection(
-            navigateToProfile = navigateToProfile,
-            navigateToNotification = navigateToNotification,
+            navigateToProfile = { homePageScreenNavigator.navigateToProfilePage() },
+            navigateToNotification = { homePageScreenNavigator.navigateToNotificationPage() },
             modifier = modifier
         )
-        ChildListSection(navigateToChildPage = navigateToChildPage)
-        MenuItemSection(navigateToMenu = navigateToMenu)
+        ChildListSection(navigateToChildPage = { homePageScreenNavigator.navigateToChildPage() }, data = data)
+        MenuItemSection(navigateToMenu = {  })
         ArticleStuntingSection(
-            navigateToArticlePage = navigateToArticlePage,
-            navigateToDetailArticle = navigateToDetailArticle
+            homePageScreenNavigator = homePageScreenNavigator
         )
         PostSection(
-            navigateToPostPage = navigateToPostPage,
-            navigateToDetailPostPage = navigateToDetailPostPage
+            homePageScreenNavigator = homePageScreenNavigator
         )
     }
 }
@@ -158,12 +161,19 @@ fun TopBarSection(
 @Composable
 fun ChildListSection(
     navigateToChildPage: (Int) -> Unit,
+    data: List<Children>,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.padding(16.dp)
-    ) {
-        CardChild(navigateToChildPage = { navigateToChildPage(1) })  // Tambahakan Parameter Id nya
+    LazyRow {
+        items(data, { it.id }) {
+            CardChild(
+                modifier = modifier.clickable { navigateToChildPage(it.id) },
+                navigateToChildPage = { navigateToChildPage(it.id) },
+                name = it.name,
+                image = it.image,
+                age = it.age.toString()
+            )
+        }
     }
 }
 
@@ -180,7 +190,7 @@ fun MenuItemSection(
         items(dummyMenu, { it.title }) {
             MenuItem(
                 menu = it,
-                modifier = modifier.clickable { navigateToMenu(1) }) // Tambahakan Parameter Id nya
+                modifier = modifier.clickable { navigateToMenu(it.imageMenu) }) // Tambahakan Parameter Id nya
         }
     }
 }
@@ -188,8 +198,7 @@ fun MenuItemSection(
 
 @Composable
 fun ArticleStuntingSection(
-    navigateToArticlePage: () -> Unit,
-    navigateToDetailArticle: (Long) -> Unit,
+    homePageScreenNavigator: HomePageScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -208,16 +217,16 @@ fun ArticleStuntingSection(
                 modifier = modifier
             ) {
                 Text(text = "Lihat Semua", fontWeight = FontWeight.Light, fontSize = 12.sp)
-                IconButton(onClick = navigateToArticlePage) {
+                IconButton(onClick = { homePageScreenNavigator.navigateToArticlePage() }) {
                     Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
                 }
             }
         }
         LazyRow {
-            items(dummyArticle, { it.title }) {
+            items(dummyArticle, { it.id }) {
                 ArticleItem(
                     article = it,
-                    modifier.clickable { navigateToDetailArticle(1) }) // Tambahkan parameter id nya
+                    modifier.clickable { homePageScreenNavigator.navigateToDetailArticle(it.image.toLong()) }) // Tambahkan parameter id nya
             }
         }
     }
@@ -225,8 +234,7 @@ fun ArticleStuntingSection(
 
 @Composable
 fun PostSection(
-    navigateToPostPage: () -> Unit,
-    navigateToDetailPostPage: (Long) -> Unit,
+    homePageScreenNavigator: HomePageScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -245,16 +253,16 @@ fun PostSection(
                 modifier = modifier
             ) {
                 Text(text = "Lihat Semua", fontWeight = FontWeight.Light, fontSize = 12.sp)
-                IconButton(onClick = navigateToPostPage) {
+                IconButton(onClick = { homePageScreenNavigator.navigateToPostPage() }) {
                     Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
                 }
             }
         }
         LazyRow {
-            items(dummyArticle, { it.title }) {
+            items(dummyArticle, { it.id }) {
                 ArticleItem(
                     article = it,
-                    modifier = modifier.clickable { navigateToDetailPostPage(1) })  // Tambahakan Parameter Id nya
+                    modifier = modifier.clickable { homePageScreenNavigator.navigateToDetailPostPage(it.image.toLong()) })  // Tambahakan Parameter Id nya
             }
         }
     }

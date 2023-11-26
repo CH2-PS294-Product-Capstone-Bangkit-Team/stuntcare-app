@@ -70,6 +70,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("io.coil-kt:coil-compose:2.2.0")
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
@@ -78,4 +79,7 @@ dependencies {
 
     // Font
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.4")
+
+    // Line Chart
+    implementation("com.patrykandpatrick.vico:compose:1.13.0")
 }

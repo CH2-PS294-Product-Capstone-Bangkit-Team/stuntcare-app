@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -22,7 +24,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.bangkit.stuntcare.ui.view.HomePageScreen
+import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
+import com.bangkit.stuntcare.ui.navigation.navigator.CommunityScreenNavigator
+import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
+import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.view.children.main.ChildrenScreen
+import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenScreen
+import com.bangkit.stuntcare.ui.view.community.CommunityScreen
+import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationScreen
+import com.bangkit.stuntcare.ui.view.home.HomePageScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +45,13 @@ fun StuntCareApp(
 
     Scaffold(
         bottomBar = {
-            BottomBar(navController = navController)
+            when (currentRoute) {
+                Screen.HomePage.route -> BottomBar(navController = navController)
+                Screen.Children.route -> BottomBar(navController = navController)
+                Screen.Consultation.route -> BottomBar(navController = navController)
+                Screen.Community.route -> BottomBar(navController = navController)
+                else -> {}
+            }
         }
     ) {
         NavHost(
@@ -46,90 +62,77 @@ fun StuntCareApp(
             // Home Page Route
             composable(Screen.HomePage.route) {
                 HomePageScreen(
-                    navigateToNotificationPage = {
-                        navController.navigate(Screen.Notification.route)
-                    },
-                    navigateToProfilePage = {
-                        navController.navigate(Screen.Profile.route)
-                    },
-                    navigateToChildPage = {
-                        navController.navigate(Screen.Children.createRoute(it))
-                    },
-                    navigateToMenu = {
-                        navController.navigate(Screen.Menu.createRoute(it))
-                    },
-                    navigateToArticlePage = {
-                        navController.navigate(Screen.Article.route)
-                    },
-                    navigateToDetailArticle = {
-                        navController.navigate(Screen.DetailArticle.createRoute(it))
-                    },
-                    navigateToPostPage = {
-                        navController.navigate(Screen.Post.route)
-                    },
-                    navigateToDetailPostPage = {
-                        navController.navigate(Screen.DetailPost.createRoute(it))
-                    }
+                    homePageScreenNavigator = HomePageScreenNavigator(navController)
                 )
 
             }
 
             composable(Screen.Notification.route) {
-
+                // TODO: Tambahkan Screen
             }
 
             composable(Screen.Profile.route) {
-
+                // TODO: Tambahkan Screen
             }
 
             composable(
                 route = Screen.Menu.route,
                 arguments = listOf(navArgument("menuId") { type = NavType.IntType })
-            ){
+            ) {
                 val id = it.arguments?.getInt("menuId") ?: -1
             }
 
 
             // Children Page Route
             composable(
-                route = Screen.Children.route,
-                arguments = listOf(navArgument("childrenId") { type = NavType.IntType })
+                route = Screen.Children.route
             ) {
-                val id = it.arguments?.getInt("childrenId") ?: -1L
+                ChildrenScreen(navigator = ChildrenScreenNavigator(navController = navController))
             }
 
 
             // Consultation Page Route
             composable(Screen.Consultation.route) {
-
+                ConsultationScreen(navigator = ConsultationScreenNavigator(navController))
             }
 
 
             // Community Page Route
             composable(Screen.Community.route) {
-
+                CommunityScreen(navigator = CommunityScreenNavigator(navController = navController))
             }
 
-            composable(Screen.Article.route){
-
+            composable(Screen.Article.route) {
+                // TODO: Tambahkan Screen
             }
 
             composable(
                 route = Screen.DetailArticle.route,
-                arguments = listOf(navArgument("articleId"){type = NavType.LongType})
-            ){
-
+                arguments = listOf(navArgument("articleId") { type = NavType.LongType })
+            ) {
+                // TODO: Tambahkan Screen
             }
 
-            composable(Screen.Post.route){
-
+            composable(Screen.Post.route) {
+                // TODO: Tambahkan Screen
             }
 
             composable(
                 route = Screen.DetailPost.route,
-                arguments = listOf(navArgument("articleId"){type = NavType.LongType})
-            ){
+                arguments = listOf(navArgument("articleId") { type = NavType.LongType })
+            ) {
+                // TODO: Tambahkan Screen
+            }
 
+            composable(
+                route = Screen.UpdateChildren.route,
+                arguments = listOf(navArgument("childrenId") { type = NavType.IntType })
+            ) {
+                val childrenId = it.arguments?.getInt("childrenId") ?: 0
+                UpdateChildrenScreen(
+                    childrenId = childrenId,
+                    navigator = ChildrenScreenNavigator(navController = navController)
+                )
             }
         }
     }
@@ -141,7 +144,7 @@ fun BottomBar(
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
-        modifier = modifier
+        modifier = modifier.alpha(1f)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -150,31 +153,43 @@ fun BottomBar(
             NavigationItem(
                 title = stringResource(id = R.string.menu_home),
                 icon = painterResource(id = R.drawable.ic_child_menu),
-                screen = Screen.HomePage
+                screen = Screen.HomePage,
             ),
             NavigationItem(
                 title = stringResource(id = R.string.menu_children),
                 icon = painterResource(id = R.drawable.ic_child_menu),
-                screen = Screen.Children
+                screen = Screen.Children,
             ),
             NavigationItem(
                 title = stringResource(R.string.menu_consultation),
                 icon = painterResource(id = R.drawable.ic_child_menu),
-                screen = Screen.Consultation
+                screen = Screen.Consultation,
             ),
             NavigationItem(
                 title = stringResource(R.string.menu_community),
                 icon = painterResource(id = R.drawable.ic_child_menu),
-                screen = Screen.Community
+                screen = Screen.Community,
             )
         )
 
         navigationItem.map {
             NavigationBarItem(
                 selected = currentRoute == it.screen.route,
-                onClick = {},
+                onClick = {
+                    navController.navigate(it.screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
+                },
                 icon = { Icon(painter = it.icon, contentDescription = null) },
-                label = { Text(text = it.title) }
+                label = {
+                    if (currentRoute == it.screen.route) {
+                        Text(text = it.title)
+                    }
+                }
             )
         }
     }

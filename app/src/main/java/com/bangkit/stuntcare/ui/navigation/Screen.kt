@@ -5,9 +5,7 @@ sealed class Screen (val route: String){
     // Bottom Bar
     object HomePage: Screen("home")
 
-    object Children: Screen("children/{childrenId}"){
-        fun createRoute(childrenId: Int) = "children/$childrenId"
-    }
+    object Children: Screen("children")
 
     object Consultation: Screen("consultation")
 
@@ -36,8 +34,14 @@ sealed class Screen (val route: String){
     }
 
     // Children Route
+    object UpdateChildren: Screen("children/{childrenId}"){
+        fun createRoute(childrenId: Int) = "children/$childrenId"
+    }
 
     // Consultation Route
+    object DetailDocter: Screen("consultation/{doctorId}"){
+        fun createRoute(doctorId: Int) = "consultation/$doctorId"
+    }
 
     // Community Route
     object Article: Screen("articles")

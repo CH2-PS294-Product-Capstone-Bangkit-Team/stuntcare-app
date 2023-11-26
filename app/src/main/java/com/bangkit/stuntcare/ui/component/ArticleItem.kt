@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.ui.model.Article
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
@@ -33,18 +34,28 @@ fun ArticleItem(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.height(200.dp)
+        modifier = modifier.height(200.dp).padding(horizontal = 4.dp)
     ) {
         Box(modifier = modifier) {
             Column {
-                Image(
-                    painter = painterResource(id = article.image),
+                AsyncImage(
+                    model = article.image,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = modifier.height(100.dp)
                 )
-                Text(text = article.title, fontWeight = FontWeight.Medium, fontSize = 12.sp, modifier = modifier.padding(4.dp))
-                Text(text = article.description, fontWeight = FontWeight.Light, fontSize = 8.sp, modifier = modifier.padding(4.dp))
+                Text(
+                    text = article.title,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 12.sp,
+                    modifier = modifier.padding(4.dp)
+                )
+                Text(
+                    text = article.description,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 8.sp,
+                    modifier = modifier.padding(4.dp)
+                )
             }
             Button(
                 onClick = {},
@@ -75,10 +86,12 @@ fun ArticleItemPreview() {
     StuntCareTheme {
         ArticleItem(
             article = Article(
-                R.drawable.removebg_preview,
+                "adjsada",
+                "https://d1vbn70lmn1nqe.cloudfront.net/prod/wp-content/uploads/2022/09/05032113/Stunting.jpg",
                 "Udin",
                 "Sehat Sehat Lelaki Kecil Ayah",
-                "24 Aug"
+                "24 Aug",
+                "Wahyuddin"
             )
         )
     }
