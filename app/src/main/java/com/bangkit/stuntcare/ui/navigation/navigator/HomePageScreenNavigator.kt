@@ -28,7 +28,13 @@ class HomePageScreenNavigator(private val navController: NavController) {
     }
 
     fun navigateToArticlePage() {
-        navController.navigate(Screen.Article.route)
+        navController.navigate(Screen.Article.route){
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 
     fun navigateToDetailArticle(articleId: Long) {
@@ -36,7 +42,13 @@ class HomePageScreenNavigator(private val navController: NavController) {
     }
 
     fun navigateToPostPage() {
-        navController.navigate(Screen.Post.route)
+        navController.navigate(Screen.Post.route){
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
     }
 
     fun navigateToDetailPostPage(postId: Long) {

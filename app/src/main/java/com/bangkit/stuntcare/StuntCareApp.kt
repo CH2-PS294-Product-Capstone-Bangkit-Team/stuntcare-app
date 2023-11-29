@@ -31,7 +31,9 @@ import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
 import com.bangkit.stuntcare.ui.view.children.main.ChildrenScreen
 import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenScreen
 import com.bangkit.stuntcare.ui.view.community.CommunityScreen
+import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorScreen
 import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationScreen
+import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleScreen
 import com.bangkit.stuntcare.ui.view.home.HomePageScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +96,24 @@ fun StuntCareApp(
             // Consultation Page Route
             composable(Screen.Consultation.route) {
                 ConsultationScreen(navigator = ConsultationScreenNavigator(navController))
+            }
+
+            composable(
+                route = Screen.DetailDoctor.route,
+                arguments = listOf(navArgument("doctorId"){type = NavType.IntType})
+            ){
+                val doctorId = it.arguments?.getInt("doctorId") ?: 0
+                DetailDoctorScreen(doctorId = doctorId, navigator = ConsultationScreenNavigator(navController))
+            }
+
+            composable(
+                route = Screen.SetSchedule.route
+            ){
+                val doctorId = it.arguments?.getInt("doctorId") ?: 0
+                SetScheduleScreen(
+                    doctorId = doctorId,
+                    navigator = ConsultationScreenNavigator(navController)
+                )
             }
 
 

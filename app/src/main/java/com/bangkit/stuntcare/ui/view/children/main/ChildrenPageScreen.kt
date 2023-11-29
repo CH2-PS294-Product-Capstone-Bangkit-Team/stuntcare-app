@@ -109,7 +109,8 @@ fun ChildrenContent(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier.clickable {
                     expanded = !expanded
-                }) {
+                }
+            ) {
                 Text(
                     text = childById!!.name,
                     fontWeight = FontWeight.Medium,

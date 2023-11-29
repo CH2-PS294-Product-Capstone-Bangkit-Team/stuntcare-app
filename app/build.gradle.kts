@@ -82,4 +82,10 @@ dependencies {
 
     // Line Chart
     implementation("com.patrykandpatrick.vico:compose:1.13.0")
+
+    // Firebase
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+
+    // DatePicker
+    implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
 }

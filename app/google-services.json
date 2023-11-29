@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "205215533408",
+    "project_id": "realtime-chat-62efc",
+    "storage_bucket": "realtime-chat-62efc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205215533408:android:57b5f1715296d17ad37605",
+        "android_client_info": {
+          "package_name": "com.bangkit.stuntcare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN4qBwsFngYUKpIOBAv5IJzYuFo5KmijI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

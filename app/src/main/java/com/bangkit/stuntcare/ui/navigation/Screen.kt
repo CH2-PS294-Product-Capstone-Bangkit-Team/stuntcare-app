@@ -39,9 +39,15 @@ sealed class Screen (val route: String){
     }
 
     // Consultation Route
-    object DetailDocter: Screen("consultation/{doctorId}"){
+    object DetailDoctor: Screen("consultation/{doctorId}"){
         fun createRoute(doctorId: Int) = "consultation/$doctorId"
     }
+
+    object SetSchedule: Screen("consultation/{doctorId}/setSchedule"){
+        fun createRoute(doctorId: Int) = "consultation/$doctorId/setSchedule"
+    }
+
+
 
     // Community Route
     object Article: Screen("articles")

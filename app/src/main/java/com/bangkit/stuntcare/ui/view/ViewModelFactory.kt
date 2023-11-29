@@ -7,6 +7,7 @@ import com.bangkit.stuntcare.ui.view.children.main.ChildrenViewModel
 import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenViewModel
 import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorViewModel
 import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationViewModel
+import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleViewModel
 import com.bangkit.stuntcare.ui.view.home.HomeViewModel
 
 class ViewModelFactory(private val repository: DataRepository) :
@@ -33,6 +34,10 @@ class ViewModelFactory(private val repository: DataRepository) :
 
             modelClass.isAssignableFrom(DetailDoctorViewModel::class.java) -> {
                 DetailDoctorViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(SetScheduleViewModel::class.java) -> {
+                SetScheduleViewModel(repository) as T
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
