@@ -1,5 +1,9 @@
 package com.bangkit.stuntcare
 
+import android.app.Activity.RESULT_OK
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,13 +32,17 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.CommunityScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.view.children.add.AddChildrenScreen
 import com.bangkit.stuntcare.ui.view.children.main.ChildrenScreen
 import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenScreen
 import com.bangkit.stuntcare.ui.view.community.CommunityScreen
+import com.bangkit.stuntcare.ui.view.consultation.chat.ChatScreen
 import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorScreen
 import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationScreen
 import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleScreen
 import com.bangkit.stuntcare.ui.view.home.HomePageScreen
+import com.bangkit.stuntcare.ui.view.login.LoginScreen
+import com.bangkit.stuntcare.ui.view.profile.main.ProfileScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +71,13 @@ fun StuntCareApp(
         ) {
             // Home Page Route
             composable(Screen.HomePage.route) {
+                val launcher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult(),
+                    onResult = {
+                        if (it.resultCode == RESULT_OK){
+                        }
+                    }
+                )
                 HomePageScreen(
                     homePageScreenNavigator = HomePageScreenNavigator(navController)
                 )
@@ -74,7 +89,7 @@ fun StuntCareApp(
             }
 
             composable(Screen.Profile.route) {
-                // TODO: Tambahkan Screen
+                ProfileScreen(navigator = HomePageScreenNavigator(navController = navController))
             }
 
             composable(
@@ -90,6 +105,10 @@ fun StuntCareApp(
                 route = Screen.Children.route
             ) {
                 ChildrenScreen(navigator = ChildrenScreenNavigator(navController = navController))
+            }
+
+            composable(route = Screen.AddChildren.route){
+                AddChildrenScreen(navigator = ChildrenScreenNavigator(navController))
             }
 
 
@@ -114,6 +133,10 @@ fun StuntCareApp(
                     doctorId = doctorId,
                     navigator = ConsultationScreenNavigator(navController)
                 )
+            }
+
+            composable(Screen.Chat.route){
+                ChatScreen(navigator = ConsultationScreenNavigator(navController = navController))
             }
 
 
@@ -153,6 +176,11 @@ fun StuntCareApp(
                     childrenId = childrenId,
                     navigator = ChildrenScreenNavigator(navController = navController)
                 )
+            }
+
+            // Login
+            composable(Screen.Login.route){
+                LoginScreen( {} )
             }
         }
     }

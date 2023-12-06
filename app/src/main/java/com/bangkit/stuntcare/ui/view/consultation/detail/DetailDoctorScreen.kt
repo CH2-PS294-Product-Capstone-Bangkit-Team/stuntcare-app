@@ -76,7 +76,7 @@ fun DetailDoctorContent(
         AsyncImage(
             model = doctor.image,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = modifier
                 .fillMaxWidth()
                 .size(180.dp)

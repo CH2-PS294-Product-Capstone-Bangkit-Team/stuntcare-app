@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,8 +44,8 @@ fun FoodCard(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .size(125.dp)
-                .padding(8.dp)
+                .padding(top = 8.dp)
+                .height(125.dp)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.primary,
@@ -78,12 +79,11 @@ fun FoodCard(
             }
         }
     } else {
-
         Box(
             modifier = modifier
                 .fillMaxWidth()
+                .padding(top = 8.dp)
                 .size(260.dp)
-                .padding(8.dp)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.primary,

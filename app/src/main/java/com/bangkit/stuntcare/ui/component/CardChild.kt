@@ -25,7 +25,6 @@ fun CardChild(
     name: String,
     age: String,
     image: String,
-    navigateToChildPage: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(

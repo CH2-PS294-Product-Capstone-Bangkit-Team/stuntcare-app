@@ -126,7 +126,9 @@ fun SetScheduleContent(
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = null,
-                    modifier = modifier.size(24.dp)
+                    modifier = modifier.size(24.dp).clickable {
+                        navigator.backNavigation()
+                    }
                 )
             }
         )

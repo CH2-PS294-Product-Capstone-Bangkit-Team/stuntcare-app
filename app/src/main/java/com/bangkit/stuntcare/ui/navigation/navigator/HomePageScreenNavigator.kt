@@ -54,5 +54,17 @@ class HomePageScreenNavigator(private val navController: NavController) {
     fun navigateToDetailPostPage(postId: Long) {
         navController.navigate(Screen.DetailPost.createRoute(postId))
     }
+
+    fun navigateToProfile(){
+        navController.navigate(Screen.Profile.route)
+    }
+
+    fun backNavigation(){
+        navController.navigateUp()
+    }
+
+    fun navigateToAddChildren(){
+        navController.navigate(Screen.AddChildren.route)
+    }
 }
 

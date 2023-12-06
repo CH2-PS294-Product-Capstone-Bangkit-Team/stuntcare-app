@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -60,6 +61,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation("com.google.firebase:firebase-auth:22.3.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -85,7 +87,19 @@ dependencies {
 
     // Firebase
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
 
     // DatePicker
     implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
+
+    // Constraint Layout
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    // Gallery Picker
+    implementation("run.nabla:gallery-picker:1.4.5")
+
+    // Api
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1") //untuk lifecycleScope
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
 }

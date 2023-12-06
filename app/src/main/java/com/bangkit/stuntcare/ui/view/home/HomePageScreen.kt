@@ -1,21 +1,27 @@
 package com.bangkit.stuntcare.ui.view.home
 
+import android.content.ClipData.Item
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
@@ -28,11 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.data.di.Injection
 import com.bangkit.stuntcare.ui.common.UiState
@@ -90,8 +98,8 @@ fun HomePageContent(
             navigateToNotification = { homePageScreenNavigator.navigateToNotificationPage() },
             modifier = modifier
         )
-        ChildListSection(navigateToChildPage = { homePageScreenNavigator.navigateToChildPage() }, data = data)
-        MenuItemSection(navigateToMenu = {  })
+        ChildListSection(homePageScreenNavigator = homePageScreenNavigator, data = data)
+        MenuItemSection(navigateToMenu = { })
         ArticleStuntingSection(
             homePageScreenNavigator = homePageScreenNavigator
         )
@@ -160,19 +168,42 @@ fun TopBarSection(
 
 @Composable
 fun ChildListSection(
-    navigateToChildPage: (Int) -> Unit,
+    homePageScreenNavigator: HomePageScreenNavigator,
     data: List<Children>,
     modifier: Modifier = Modifier
 ) {
     LazyRow {
         items(data, { it.id }) {
             CardChild(
-                modifier = modifier.clickable { navigateToChildPage(it.id) },
-                navigateToChildPage = { navigateToChildPage(it.id) },
+                modifier = modifier.clickable {
+                    homePageScreenNavigator.navigateToChildPage()
+                },
                 name = it.name,
                 image = it.image,
                 age = it.age.toString()
             )
+        }
+        item {
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = modifier
+                    .padding(8.dp, 16.dp)
+                    .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+                    .height(height = 90.dp)
+                    .clickable { homePageScreenNavigator.navigateToAddChildren() }
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = modifier.size(60.dp)
+                    )
+                    Text(text = "Tambahkan Anak", fontWeight = FontWeight.Light, modifier = modifier.padding(horizontal = 12.dp))
+                }
+            }
         }
     }
 }
@@ -262,7 +293,11 @@ fun PostSection(
             items(dummyArticle, { it.id }) {
                 ArticleItem(
                     article = it,
-                    modifier = modifier.clickable { homePageScreenNavigator.navigateToDetailPostPage(it.image.toLong()) })  // Tambahakan Parameter Id nya
+                    modifier = modifier.clickable {
+                        homePageScreenNavigator.navigateToDetailPostPage(
+                            it.image.toLong()
+                        )
+                    })  // Tambahakan Parameter Id nya
             }
         }
     }

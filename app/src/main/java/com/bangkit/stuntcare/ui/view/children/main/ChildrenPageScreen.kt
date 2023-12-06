@@ -1,5 +1,6 @@
 package com.bangkit.stuntcare.ui.view.children.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,10 +17,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -152,7 +156,12 @@ fun ChildrenContent(
             navigator = navigator,
             modifier = modifier
         )
-        TabRow(selectedTabIndex = tabIndex, modifier = modifier.offset(0.dp, 0.dp)) {
+        TabRow(
+            selectedTabIndex = tabIndex, modifier = modifier
+                .offset(0.dp, 0.dp)
+                .padding(top = 8.dp)
+                .background(Color.Transparent)
+        ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
                     text = { Text(text = title) },
@@ -179,30 +188,49 @@ fun ChildData(
 ) {
     if (children != null) {
         Column(modifier = modifier.padding(top = 16.dp)) {
-            Text(text = "Data Anak", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween, modifier = modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
-            ) {
-                ChildrenBoxInfo(title = "Berat", data = children.weight.toString(), unit = "Kg")
-                ChildrenBoxInfo(title = "Tinggi", data = children.height.toString(), unit = "Kg")
-                ChildrenBoxInfo(title = "Umur", data = children.age.toString(), unit = "Kg")
-            }
             Text(
-                text = "Last Updated: 12-12-2024",
-                fontWeight = FontWeight.Light,
-                fontSize = 10.sp,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
+                text = "Data Anak",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                modifier = modifier.padding(8.dp)
             )
-            Button(
-                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 24.dp),
-                onClick = { navigator.navigateToUpdateData(children.id) },
-                modifier = modifier.align(Alignment.End)
+            Card(
+                modifier = modifier.fillMaxWidth()
             ) {
-                Text(text = "Update", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween, modifier = modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    ChildrenBoxInfo(title = "Berat", data = children.weight.toString(), unit = "Kg")
+                    ChildrenBoxInfo(
+                        title = "Tinggi",
+                        data = children.height.toString(),
+                        unit = "Kg"
+                    )
+                    ChildrenBoxInfo(title = "Umur", data = children.age.toString(), unit = "Kg")
+                }
+                Divider(thickness = 1.dp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    Text(
+                        text = "Last Updated: 12-12-2024",
+                        fontWeight = FontWeight.Light,
+                        fontSize = 10.sp,
+                        modifier = modifier
+                            .padding(top = 8.dp)
+                    )
+                    Button(
+                        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 24.dp),
+                        onClick = { navigator.navigateToUpdateData(children.id) }
+                    ) {
+                        Text(text = "Update", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                    }
+                }
             }
         }
     }
@@ -217,40 +245,50 @@ fun StatisticChildrenScreen(
         Text(
             text = "Statistik Perkembangan Anak",
             fontWeight = FontWeight.SemiBold,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            modifier = modifier.padding(vertical = 8.dp)
         )
-        QuadLineChartComponent() // TODO: Perbaiki Componentnya
-        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-            Row {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = modifier.size(24.dp)
-                )
-                Text(text = "Stunting: ", fontWeight = FontWeight.Light, fontSize = 12.sp)
-                Text(
-                    text = "Pendek",
-                    color = Color.Red,
-                    fontWeight = FontWeight.Light,
-                    fontSize = 12.sp
-                )
-            }
-            Row {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = modifier.size(24.dp)
-                )
-                Text(text = "BMI: ", fontWeight = FontWeight.Light, fontSize = 12.sp)
-                Text(
-                    text = "Kurus",
-                    color = Color.Red,
-                    fontWeight = FontWeight.Light,
-                    fontSize = 12.sp
-                )
-            }
+        Card {
+            QuadLineChartComponent() // TODO: Perbaiki Componentnya
 
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Row {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = modifier.size(24.dp)
+                    )
+                    Text(text = "Stunting: ", fontWeight = FontWeight.Light, fontSize = 12.sp)
+                    Text(
+                        text = "Pendek",
+                        color = Color.Red,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 12.sp
+                    )
+                }
+                Row {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = modifier.size(24.dp)
+                    )
+                    Text(text = "BMI: ", fontWeight = FontWeight.Light, fontSize = 12.sp)
+                    Text(
+                        text = "Kurus",
+                        color = Color.Red,
+                        fontWeight = FontWeight.Light,
+                        fontSize = 12.sp
+                    )
+                }
+
+            }
         }
+
         Text(text = "Rekomendasi Makanan", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
 //        LazyRow{
 //            // TODO: Tambahkan Card Makanan
@@ -263,12 +301,15 @@ fun StatisticChildrenScreen(
 fun ChildrenDiary(
     modifier: Modifier = Modifier
 ) {
-    Column {
-        SectionText(title = "Hari Ini")
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        SectionText(title = "Hari Ini", modifier = modifier.padding(vertical = 8.dp))
         Text(text = "Protein", fontWeight = FontWeight.Light, fontSize = 14.sp)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.fillMaxWidth()
         ) {
             LinearProgressIndicator(progress = 0.5f)
             Text(text = "250/500")
@@ -276,7 +317,8 @@ fun ChildrenDiary(
         Text(text = "Karbohidrat", fontWeight = FontWeight.Light, fontSize = 14.sp)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.fillMaxWidth()
         ) {
             LinearProgressIndicator(progress = 0.5f)
             Text(text = "250/500")

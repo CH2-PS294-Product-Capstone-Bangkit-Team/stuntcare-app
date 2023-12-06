@@ -38,6 +38,8 @@ sealed class Screen (val route: String){
         fun createRoute(childrenId: Int) = "children/$childrenId"
     }
 
+    object AddChildren: Screen("children/add")
+
     // Consultation Route
     object DetailDoctor: Screen("consultation/{doctorId}"){
         fun createRoute(doctorId: Int) = "consultation/$doctorId"
@@ -47,10 +49,17 @@ sealed class Screen (val route: String){
         fun createRoute(doctorId: Int) = "consultation/$doctorId/setSchedule"
     }
 
+    object Chat: Screen("consultation/chat")
 
 
     // Community Route
     object Article: Screen("articles")
 
     object Post: Screen("posts")
+
+    // Login
+    object Login: Screen("login")
+
+    // Register
+    object Register: Screen("register")
 }

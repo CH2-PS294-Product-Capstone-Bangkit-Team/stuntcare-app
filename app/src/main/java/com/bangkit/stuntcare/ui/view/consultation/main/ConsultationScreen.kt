@@ -83,23 +83,25 @@ fun ConsultationContent(
         item {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier.fillMaxWidth()
             ) {
-                SearchBar(query = query, onQueryChange = onQueryChange)
-                IconButton(onClick = { /*TODO*/ }) {
+                SearchBar(query = query, onQueryChange = onQueryChange, modifier.weight(0.9f))
+                IconButton(onClick = { navigator.navigateToChatScreen() }) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
                         contentDescription = null,
                         modifier = modifier
-                            .size(32.dp)
+                            .size(60.dp)
                             .padding(start = 4.dp, end = 8.dp)
+                            .weight(0.1f)
                     ) // TODO = Ganti jadi Icon Chat
                 }
             }
         }
 
-        items(dummyDoctor, { it.id }) {
-            DoctorCard(doctor = it, modifier = modifier.clickable { navigator.navigateToDetailDoctor(it.id) })
+        items(doctor, { it.id }) {
+            DoctorCard(doctor = it, navigator = navigator, modifier = modifier.clickable { navigator.navigateToDetailDoctor(it.id) })
         }
     }
 }
@@ -107,6 +109,7 @@ fun ConsultationContent(
 @Composable
 fun DoctorCard(
     doctor: Doctor,
+    navigator: ConsultationScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -152,7 +155,7 @@ fun DoctorCard(
 
                 }
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = { navigator.navigateToSetSchedule(doctor.id) },
                     contentPadding = PaddingValues(0.dp),
                     modifier = modifier
                         .size(height = 20.dp, width = 60.dp)
@@ -167,13 +170,5 @@ fun DoctorCard(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DoctorCardPreview() {
-    StuntCareTheme {
-        DoctorCard(doctor = dummyDoctor[0])
     }
 }

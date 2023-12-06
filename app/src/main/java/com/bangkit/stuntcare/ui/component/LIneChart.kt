@@ -3,9 +3,12 @@ package com.bangkit.stuntcare.ui.component
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -33,13 +36,15 @@ import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.style.ChartStyle
+import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 
 @Composable
 fun QuadLineChartComponent(
+    modifier: Modifier = Modifier
 ) {
-
     val xValue: Array<Float> = dummyLineChart.map {
         it.xValue
     }.toTypedArray()
@@ -49,18 +54,30 @@ fun QuadLineChartComponent(
     }.toTypedArray()
 
     val chartEntryModel = entryModelOf(entriesOf(*xValue), entriesOf(*yValue))
-    Chart(
-        chart = lineChart(),
-        model = chartEntryModel,
-        startAxis = rememberStartAxis(),
-        bottomAxis = rememberBottomAxis()
-    )
+    Column(
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        ProvideChartStyle(
+            ChartStyle.fromColors(
+                axisLabelColor = Color.Black,
+                axisGuidelineColor = Color.Transparent,
+                axisLineColor = Color.Black,
+                entityColors = listOf(Color.Green, Color.Blue),
+                elevationOverlayColor = LocalContentColor.current,
+            )
+        ) {
+            Chart(
+                chart = lineChart(),
+                model = chartEntryModel,
+                startAxis = rememberStartAxis(),
+                bottomAxis = rememberBottomAxis(),
+            )
+        }
+    }
 }
 
 data class ChartDataImpl(
-    val chartString: String,
-    val xValue: Float,
-    val yValue: Float
+    val chartString: String, val xValue: Float, val yValue: Float
 )
 
 val dummyLineChart = listOf(

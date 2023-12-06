@@ -12,6 +12,10 @@ class ConsultationScreenNavigator(private val navController: NavController) {
         navController.navigate(Screen.SetSchedule.createRoute(doctorId))
     }
 
+    fun navigateToChatScreen(){
+        navController.navigate(Screen.Chat.route)
+    }
+
     fun backNavigation(){
         navController.navigateUp()
     }
