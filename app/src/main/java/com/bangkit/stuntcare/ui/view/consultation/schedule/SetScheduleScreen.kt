@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,7 @@ fun SetScheduleScreen(
     doctorId: Int,
     navigator: ConsultationScreenNavigator,
     viewModel: SetScheduleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(Injection.provideRepository())
+        factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
     viewModel.uiState.collectAsState().value.let {

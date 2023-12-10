@@ -1,5 +1,7 @@
 package com.bangkit.stuntcare.data
 
+import com.bangkit.stuntcare.data.pref.UserModel
+import com.bangkit.stuntcare.data.pref.UserPreference
 import com.bangkit.stuntcare.ui.model.Doctor
 import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.model.children.FakeChildren
@@ -7,7 +9,9 @@ import com.bangkit.stuntcare.ui.model.dummyDoctor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class DataRepository {
+class DataRepository (
+    private val userPreference: UserPreference
+) {
     private val childList = mutableListOf<Children>()
     private val doctorList = mutableListOf<Doctor>()
 
@@ -40,6 +44,14 @@ class DataRepository {
         return childList[0]
     }
 
+    fun addChildren(children: Children){
+        // TODO
+    }
+
+    fun editChildren(childrenId: Int, height: Float, weight: Float){
+        // TODO
+    }
+
     // Data Doctor
     fun getAllDoctor(): Flow<List<Doctor>>{
         return flowOf(doctorList)
@@ -57,14 +69,29 @@ class DataRepository {
         }
     }
 
+    // Login Method
+    suspend fun saveSession(userModel: UserModel){
+        userPreference.saveSession(userModel)
+    }
+
+    fun getSession(): Flow<UserModel>{
+        return userPreference.getSession()
+    }
+
+    suspend fun logout() {
+        userPreference.logout()
+    }
+
     companion object {
         @Volatile
         private var instance: DataRepository? = null
 
-        fun getInstance(): DataRepository =
+        fun getInstance(
+            userPreference: UserPreference
+        ): DataRepository =
             instance ?: synchronized(this) {
-                DataRepository().apply {
-                    instance =   this
+                DataRepository(userPreference).also {
+                    instance = it
                 }
             }
     }

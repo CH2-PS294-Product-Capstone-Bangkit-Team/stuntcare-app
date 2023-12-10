@@ -20,4 +20,8 @@ class UpdateChildrenViewModel(private val repository: DataRepository): ViewModel
             _children.value = repository.getChildrenById(id)
         }
     }
+
+    suspend fun updateChildren(){
+        // TODO
+    }
 }

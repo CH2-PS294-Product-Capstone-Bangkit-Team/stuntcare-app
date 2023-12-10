@@ -11,5 +11,5 @@ fun SectionText(
     title: String,
     modifier: Modifier = Modifier
 ) {
-    Text(text = title, fontWeight = FontWeight.Medium, fontSize = 16.sp, modifier = modifier)
+    Text(text = title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, modifier = modifier)
 }

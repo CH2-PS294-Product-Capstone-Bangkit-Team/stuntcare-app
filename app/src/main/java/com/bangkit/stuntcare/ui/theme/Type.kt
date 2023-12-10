@@ -16,7 +16,7 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
-val fontName = GoogleFont("Inter")
+val fontName = GoogleFont("Poppins")
 val fontFamily = FontFamily(
     androidx.compose.ui.text.googlefonts.Font(googleFont = fontName, fontProvider = provider)
 )

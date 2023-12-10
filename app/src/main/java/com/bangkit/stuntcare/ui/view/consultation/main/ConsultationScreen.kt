@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,9 +48,7 @@ fun ConsultationScreen(
     modifier: Modifier = Modifier,
     navigator: ConsultationScreenNavigator,
     viewModel: ConsultationViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(
-            Injection.provideRepository()
-        )
+        factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
     val query by viewModel.query

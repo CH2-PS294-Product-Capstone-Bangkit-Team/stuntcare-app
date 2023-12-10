@@ -31,7 +31,7 @@ fun CardChild(
         contentAlignment = Alignment.CenterStart,
         modifier = modifier
             .padding(8.dp, 16.dp)
-            .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+            .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
             .size(250.dp, 89.dp)
     ) {
         Row(

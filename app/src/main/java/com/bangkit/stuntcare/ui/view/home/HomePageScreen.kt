@@ -1,6 +1,7 @@
 package com.bangkit.stuntcare.ui.view.home
 
 import android.content.ClipData.Item
+import android.widget.GridView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,11 +11,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -23,6 +32,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
@@ -35,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +58,7 @@ import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ArticleItem
 import com.bangkit.stuntcare.ui.component.CardChild
 import com.bangkit.stuntcare.ui.component.MenuItem
+import com.bangkit.stuntcare.ui.component.SectionText
 import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.model.dummyArticle
 import com.bangkit.stuntcare.ui.model.dummyMenu
@@ -58,9 +70,7 @@ fun HomePageScreen(
     modifier: Modifier = Modifier,
     homePageScreenNavigator: HomePageScreenNavigator,
     viewModel: HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(
-            Injection.provideRepository()
-        )
+        factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
     viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
@@ -117,11 +127,10 @@ fun TopBarSection(
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp))
-            .background(Color.Green)
-            .padding(0.dp, 0.dp, 0.dp, 20.dp)
+            .padding(vertical = 16.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -157,7 +166,7 @@ fun TopBarSection(
 
             IconButton(onClick = navigateToProfile) {
                 Icon(
-                    imageVector = Icons.Outlined.Person,
+                    imageVector = Icons.Outlined.AccountCircle,
                     contentDescription = null,
                     modifier = modifier.size(28.dp)
                 )
@@ -172,7 +181,9 @@ fun ChildListSection(
     data: List<Children>,
     modifier: Modifier = Modifier
 ) {
-    LazyRow {
+    LazyRow(
+        modifier = modifier.background(Color.Green)
+    ) {
         items(data, { it.id }) {
             CardChild(
                 modifier = modifier.clickable {
@@ -201,7 +212,11 @@ fun ChildListSection(
                         contentDescription = null,
                         modifier = modifier.size(60.dp)
                     )
-                    Text(text = "Tambahkan Anak", fontWeight = FontWeight.Light, modifier = modifier.padding(horizontal = 12.dp))
+                    Text(
+                        text = "Tambahkan Anak",
+                        fontWeight = FontWeight.Light,
+                        modifier = modifier.padding(horizontal = 12.dp)
+                    )
                 }
             }
         }
@@ -213,20 +228,18 @@ fun MenuItemSection(
     navigateToMenu: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        modifier = modifier.fillMaxWidth()
-    ) {
-        items(dummyMenu, { it.title }) {
-            MenuItem(
-                menu = it,
-                modifier = modifier.clickable { navigateToMenu(it.imageMenu) }) // Tambahakan Parameter Id nya
+    Column {
+        SectionText(title = "Menu", modifier = modifier.padding(horizontal = 16.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            dummyMenu.forEach {menu ->
+                MenuItem(menu = menu, modifier = modifier.clickable { navigateToMenu(menu.imageMenu) })
+            }
         }
     }
 }
-
-
 @Composable
 fun ArticleStuntingSection(
     homePageScreenNavigator: HomePageScreenNavigator,

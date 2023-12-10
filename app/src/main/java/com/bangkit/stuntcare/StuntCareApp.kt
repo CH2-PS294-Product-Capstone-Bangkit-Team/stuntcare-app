@@ -12,9 +12,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
@@ -32,6 +34,7 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.CommunityScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.bangkit.stuntcare.ui.view.children.add.AddChildrenScreen
 import com.bangkit.stuntcare.ui.view.children.main.ChildrenScreen
 import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenScreen
@@ -43,15 +46,21 @@ import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleScreen
 import com.bangkit.stuntcare.ui.view.home.HomePageScreen
 import com.bangkit.stuntcare.ui.view.login.LoginScreen
 import com.bangkit.stuntcare.ui.view.profile.main.ProfileScreen
+import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StuntCareApp(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    viewModel: StuntCareAppViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = ViewModelFactory.getInstance(LocalContext.current)
+    )
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val thisSession = viewModel.thisSession.collectAsState().value
+
 
     Scaffold(
         bottomBar = {
@@ -66,7 +75,7 @@ fun StuntCareApp(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.HomePage.route,
+            startDestination = if (thisSession.isLogin) Screen.HomePage.route else Screen.Login.route ,
             modifier = modifier.padding(it)
         ) {
             // Home Page Route

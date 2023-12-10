@@ -1,5 +1,6 @@
 package com.bangkit.stuntcare.ui.view.children.update
 
+import com.bangkit.stuntcare.R
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -44,9 +47,7 @@ fun UpdateChildrenScreen(
     childrenId: Int,
     navigator: ChildrenScreenNavigator,
     viewModel: UpdateChildrenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(
-            Injection.provideRepository()
-        )
+        factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
     viewModel.getChildrenById(childrenId).let {
@@ -90,6 +91,12 @@ fun UpdateChildrenContent(
             label = { Text("Nama") },
             onValueChange = { },
             readOnly = true,
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_child_menu),
+                    contentDescription = null
+                )
+            },
             modifier = modifier.fillMaxWidth()
         )
         OutlinedTextField(
@@ -107,7 +114,11 @@ fun UpdateChildrenContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = modifier.fillMaxWidth()
         )
-        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically,modifier = Modifier.fillMaxWidth()) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             OutlinedTextField(
                 value = height,
                 label = { Text(text = "Tinggi Badan") },
@@ -120,7 +131,9 @@ fun UpdateChildrenContent(
         }
         Button(
             onClick = { /*TODO*/ },
-            modifier = modifier.align(Alignment.CenterHorizontally).padding(8.dp)
+            modifier = modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp)
         ) {
             Text(text = "UPDATE", fontWeight = FontWeight.Medium, fontSize = 16.sp)
         }

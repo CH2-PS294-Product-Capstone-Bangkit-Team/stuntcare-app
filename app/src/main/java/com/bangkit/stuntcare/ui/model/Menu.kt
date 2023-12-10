@@ -9,7 +9,7 @@ data class Menu(
 )
 
 val dummyMenu = listOf(
-    Menu(R.drawable.ic_child_menu, "Konsultasi"),
-    Menu(R.drawable.ic_child_menu, "Artikel"),
-    Menu(R.drawable.ic_child_menu, "Chat")
+    Menu(R.drawable.ic_child_menu,"Konsultasi"),
+    Menu(R.drawable.ic_child_menu,"Artikel"),
+    Menu(R.drawable.ic_child_menu,"Chat")
 )

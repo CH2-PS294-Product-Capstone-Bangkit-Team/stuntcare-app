@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,22 +35,36 @@ import com.bangkit.stuntcare.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bangkit.stuntcare.data.DataRepository
+import com.bangkit.stuntcare.data.pref.UserModel
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
+import com.bangkit.stuntcare.ui.view.ViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(
-    loginGoogle: () -> Unit
+    loginGoogle: () -> Unit,
+    loginViewModel: LoginViewModel = viewModel(factory = ViewModelFactory.getInstance(LocalContext.current))
 ) {
-    LoginContent()
+    LoginContent(
+        loginViewModel = loginViewModel
+    )
 }
 
 @Composable
 fun LoginContent(
+    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
     var email by rememberSaveable {
         mutableStateOf("")
     }
+
+    val coroutineScope = rememberCoroutineScope()
 
     var password by remember {
         mutableStateOf("")
@@ -130,7 +145,14 @@ fun LoginContent(
                 )
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val response = withContext(Dispatchers.IO) {
+                                /*TODO*/
+                            }
+                            loginViewModel.saveSession(UserModel(email, "", "", true))
+                        }
+                    },
                     contentPadding = PaddingValues(vertical = 4.dp, horizontal = 24.dp),
                     modifier = modifier
                         .constrainAs(btnLogin) {
@@ -141,10 +163,10 @@ fun LoginContent(
                 ) {
                     Text(text = "Masuk")
                 }
-                
+
                 Row(
                     modifier = modifier
-                        .constrainAs(tvRegister){
+                        .constrainAs(tvRegister) {
                             bottom.linkTo(parent.bottom, margin = 24.dp)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
@@ -160,18 +182,12 @@ fun LoginContent(
                         fontWeight = FontWeight.Normal,
                         fontSize = 16.sp,
                         textDecoration = TextDecoration.Underline,
-                        modifier = modifier.padding(start = 8.dp).clickable { /*TODO*/ }
+                        modifier = modifier
+                            .padding(start = 8.dp)
+                            .clickable {  }
                     )
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun LoginContentPreview() {
-    StuntCareTheme {
-        LoginContent()
     }
 }

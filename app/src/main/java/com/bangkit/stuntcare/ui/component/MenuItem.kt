@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -12,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.ui.model.Menu
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
@@ -23,26 +26,26 @@ fun MenuItem(
     modifier: Modifier = Modifier,
     menu: Menu
 ) {
-    Card(
-        shape = CardDefaults.outlinedShape,
-        modifier = modifier.size(90.dp, 100.dp)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.padding(horizontal = 32.dp)
     ) {
-        Column(
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Card(
+            shape = CardDefaults.outlinedShape,
+            modifier = modifier.size(70.dp, 70.dp)
         ) {
             Image(
                 painter = painterResource(id = menu.imageMenu),
                 contentDescription = null,
-                modifier = modifier.size(70.dp,70.dp)
+                modifier = modifier.fillMaxSize()
             )
-            Text(text = menu.title)
         }
+        Text(text = menu.title, fontWeight = FontWeight.Medium, fontSize = 12.sp, modifier = modifier.padding(top = 8.dp))
     }
 }
 
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun MenuItemPreview() {
     StuntCareTheme {

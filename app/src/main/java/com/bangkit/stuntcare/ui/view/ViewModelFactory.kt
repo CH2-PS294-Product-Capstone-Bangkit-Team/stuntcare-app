@@ -3,6 +3,7 @@ package com.bangkit.stuntcare.ui.view
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.bangkit.stuntcare.StuntCareAppViewModel
 import com.bangkit.stuntcare.data.DataRepository
 import com.bangkit.stuntcare.data.di.Injection
 import com.bangkit.stuntcare.ui.view.children.main.ChildrenViewModel
@@ -11,6 +12,8 @@ import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorViewModel
 import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationViewModel
 import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleViewModel
 import com.bangkit.stuntcare.ui.view.home.HomeViewModel
+import com.bangkit.stuntcare.ui.view.login.LoginViewModel
+import com.bangkit.stuntcare.ui.view.register.RegisterViewModel
 
 class ViewModelFactory(private val repository: DataRepository) :
     ViewModelProvider.NewInstanceFactory() {
@@ -42,21 +45,34 @@ class ViewModelFactory(private val repository: DataRepository) :
                 SetScheduleViewModel(repository) as T
             }
 
+            modelClass.isAssignableFrom(StuntCareAppViewModel::class.java) -> {
+                StuntCareAppViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(LoginViewModel::class.java) -> {
+                LoginViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(RegisterViewModel::class.java) -> {
+                RegisterViewModel(repository) as T
+            }
+
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }
 
-//    companion object {
-//        @Volatile
-//        private var INSTANCE: ViewModelFactory? = null
-//        @JvmStatic
-//        fun getInstance(context: Context): ViewModelFactory {
-//            if (INSTANCE == null) {
-//                synchronized(ViewModelFactory::class.java) {
-//                    INSTANCE = ViewModelFactory(Injection.provideRepository(context))
-//                }
-//            }
-//            return INSTANCE as ViewModelFactory
-//        }
-//    }
+    companion object {
+        @Volatile
+        private var INSTANCE: ViewModelFactory? = null
+
+        @JvmStatic
+        fun getInstance(context: Context): ViewModelFactory {
+            if (INSTANCE == null) {
+                synchronized(ViewModelFactory::class.java) {
+                    INSTANCE = ViewModelFactory(Injection.provideRepository(context))
+                }
+            }
+            return INSTANCE as ViewModelFactory
+        }
+    }
 }

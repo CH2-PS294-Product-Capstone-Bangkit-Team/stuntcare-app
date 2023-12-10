@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +37,7 @@ fun DetailDoctorScreen(
     modifier: Modifier = Modifier,
     navigator: ConsultationScreenNavigator,
     viewModel: DetailDoctorViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
-        factory = ViewModelFactory(Injection.provideRepository())
+        factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
     viewModel.getDoctorById(doctorId).let {
