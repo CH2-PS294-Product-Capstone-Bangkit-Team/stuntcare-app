@@ -5,7 +5,7 @@ import com.bangkit.stuntcare.ui.model.children.Children
 object FakeChildren {
     val dummyChildren = listOf(
         Children(
-            1,
+            "1",
             "Wahyu",
             "https://oss.mommyasia.id/photo/5cac14628e4d537b0ac55aeb?x-oss-process=style/_l",
             "Stunting",
@@ -15,7 +15,7 @@ object FakeChildren {
             "12-12-2023"
         ),
         Children(
-            2,
+            "2",
             "Rudi",
             "https://oss.mommyasia.id/photo/5cac14628e4d537b0ac55aeb?x-oss-process=style/_l",
             "Normal",

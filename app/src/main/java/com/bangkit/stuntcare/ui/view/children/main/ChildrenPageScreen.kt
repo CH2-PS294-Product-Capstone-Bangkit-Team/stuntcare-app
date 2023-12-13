@@ -92,7 +92,7 @@ fun ChildrenContent(
         mutableStateOf(false)
     }
     var childrenId by remember {
-        mutableStateOf(1)
+        mutableStateOf("1")
     }
 
     var tabIndex by remember {

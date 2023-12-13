@@ -16,7 +16,7 @@ class UpdateChildrenViewModel(private val repository: DataRepository): ViewModel
     val children: StateFlow<Children?>
         get() = _children
 
-    fun getChildrenById(id: Int){
+    fun getChildrenById(id: String){
         viewModelScope.launch {
             _children.value = repository.getChildrenById(id)
         }

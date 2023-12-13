@@ -35,7 +35,7 @@ class DataRepository (
         return flowOf(childList)
     }
 
-    fun getChildrenById(id: Int): Children{
+    fun getChildrenById(id: String): Children{
         return childList.first {
             it.id == id
         }

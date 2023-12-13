@@ -35,7 +35,7 @@ sealed class Screen (val route: String){
 
     // Children Route
     object UpdateChildren: Screen("children/{childrenId}"){
-        fun createRoute(childrenId: Int) = "children/$childrenId"
+        fun createRoute(childrenId: String) = "children/$childrenId"
     }
 
     object AddChildren: Screen("children/add")

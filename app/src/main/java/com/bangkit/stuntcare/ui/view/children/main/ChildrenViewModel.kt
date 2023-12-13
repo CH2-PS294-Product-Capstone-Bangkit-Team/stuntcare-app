@@ -33,7 +33,7 @@ class ChildrenViewModel(val repository: DataRepository) : ViewModel() {
         getFirstChildren()
         getChildrenById(_firstChildren.value!!.id)
     }
-    fun getChildrenById(id: Int) {
+    fun getChildrenById(id: String) {
         viewModelScope.launch {
             val child = repository.getChildrenById(id)
             _childrenById.value = child

@@ -44,7 +44,7 @@ import java.util.concurrent.Flow
 
 @Composable
 fun UpdateChildrenScreen(
-    childrenId: Int,
+    childrenId: String,
     navigator: ChildrenScreenNavigator,
     viewModel: UpdateChildrenViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)

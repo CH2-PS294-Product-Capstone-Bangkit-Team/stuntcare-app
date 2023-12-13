@@ -213,9 +213,9 @@ fun StuntCareApp(
 
             composable(
                 route = Screen.UpdateChildren.route,
-                arguments = listOf(navArgument("childrenId") { type = NavType.IntType })
+                arguments = listOf(navArgument("childrenId") { type = NavType.StringType })
             ) {
-                val childrenId = it.arguments?.getInt("childrenId") ?: 0
+                val childrenId = it.arguments?.getString("childrenId") ?: ""
                 UpdateChildrenScreen(
                     childrenId = childrenId,
                     navigator = ChildrenScreenNavigator(navController = navController)
