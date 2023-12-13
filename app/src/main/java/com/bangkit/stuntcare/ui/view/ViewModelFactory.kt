@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bangkit.stuntcare.StuntCareAppViewModel
 import com.bangkit.stuntcare.data.DataRepository
 import com.bangkit.stuntcare.data.di.Injection
+import com.bangkit.stuntcare.ui.view.children.add.AddChildrenViewModel
 import com.bangkit.stuntcare.ui.view.children.main.ChildrenViewModel
 import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenViewModel
 import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorViewModel
@@ -55,6 +56,10 @@ class ViewModelFactory(private val repository: DataRepository) :
 
             modelClass.isAssignableFrom(RegisterViewModel::class.java) -> {
                 RegisterViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(AddChildrenViewModel::class.java) -> {
+                AddChildrenViewModel(repository) as T
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)

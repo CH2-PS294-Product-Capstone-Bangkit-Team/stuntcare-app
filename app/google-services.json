@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "821002326836-j7pe61km1u4f5qrcv5mmf21v80ucnmu7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bangkit.stuntcare",
+            "certificate_hash": "9d81945d4cc46f54093cbd8e306f07f751143fbf"
+          }
+        },
+        {
           "client_id": "821002326836-5vqlr6emvlmslj6ssh5pjr236fuebml4.apps.googleusercontent.com",
           "client_type": 3
         }

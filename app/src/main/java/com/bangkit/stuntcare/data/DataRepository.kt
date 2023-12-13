@@ -9,6 +9,8 @@ import com.bangkit.stuntcare.ui.model.children.FakeChildren
 import com.bangkit.stuntcare.ui.model.dummyDoctor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class DataRepository (
     private val userPreference: UserPreference
@@ -46,11 +48,13 @@ class DataRepository (
     }
 
     suspend fun updateChildren(id: String, weight: Float, height: Int): ApiResponse{
+        // TODO
         return ApiResponse("success", "Data anak berhasil di update")
     }
 
-    fun addChildren(children: Children){
+    suspend fun addChildren(childrenImage: MultipartBody.Part, name: RequestBody, birthDate: RequestBody, height: RequestBody, weight: RequestBody): ApiResponse{
         // TODO
+        return ApiResponse("success", "Data anak berhasil di Tambahkan")
     }
 
     fun editChildren(childrenId: Int, height: Float, weight: Float){

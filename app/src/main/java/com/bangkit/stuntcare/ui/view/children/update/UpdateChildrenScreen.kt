@@ -1,5 +1,6 @@
 package com.bangkit.stuntcare.ui.view.children.update
 
+import android.widget.Toast
 import com.bangkit.stuntcare.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,7 @@ fun UpdateChildrenScreen(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
-    
+
     viewModel.getChildrenById(childrenId).let {
         val children = viewModel.children.collectAsState().value
         if (children != null) {
@@ -71,12 +72,16 @@ fun UpdateChildrenContent(
     navigator: ChildrenScreenNavigator,
     modifier: Modifier = Modifier
 ) {
-    val weight by remember {
+    var weight by remember {
         mutableStateOf(children.weight.toString())
     }
 
-    val height by remember {
+    var height by remember {
         mutableStateOf(children.height.toString())
+    }
+
+    var updateState by remember {
+        mutableStateOf(false)
     }
 
     Column(verticalArrangement = Arrangement.Center, modifier = modifier.padding(12.dp)) {
@@ -112,24 +117,42 @@ fun UpdateChildrenContent(
         OutlinedTextField(
             value = weight,
             label = { Text(text = "Berat Badan") },
-            onValueChange = {},
+            onValueChange = { weight = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = height,
             label = { Text(text = "Tinggi Badan") },
-            onValueChange = {},
+            onValueChange = { height = it },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         Button(
             onClick = {
-                      },
+                updateState = true
+            },
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(8.dp)
         ) {
             Text(text = "UPDATE", fontWeight = FontWeight.Medium, fontSize = 16.sp)
+        }
+    }
+
+    // TODO
+    val context = LocalContext.current
+
+    if (updateState){
+        LaunchedEffect(key1 = updateState) {
+            val response = viewModel.updateChildren(children.id, weight.toFloat(), height.toInt())
+            if (response.status == "success") {
+                navigator.backNavigation()
+                Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                updateState = false
+            } else {
+                Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                updateState = false
+            }
         }
     }
 }

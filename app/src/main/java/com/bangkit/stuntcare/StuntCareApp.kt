@@ -58,6 +58,7 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.CommunityScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.bangkit.stuntcare.ui.view.children.add.AddChildrenScreen
 import com.bangkit.stuntcare.ui.view.children.main.ChildrenScreen
@@ -130,7 +131,7 @@ fun StuntCareApp(
             }
 
             composable(Screen.Profile.route) {
-                ProfileScreen(navigator = HomePageScreenNavigator(navController = navController))
+                ProfileScreen(navigator = ProfileScreenNavigator(navController = navController))
             }
 
             composable(
@@ -224,7 +225,12 @@ fun StuntCareApp(
 
             // Login
             composable(Screen.Login.route) {
-                LoginWithGoogleScreen(navigateToHomePage = { /*TODO*/ })
+                LoginWithGoogleScreen(
+                    navigateToHomePage = {
+                        navController.navigate(Screen.HomePage.route)
+                        navController.clearBackStack(Screen.HomePage.route)
+                    }
+                )
             }
         }
     }

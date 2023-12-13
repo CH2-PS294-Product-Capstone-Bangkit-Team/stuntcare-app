@@ -42,19 +42,20 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.ui.component.SectionText
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun ProfileScreen(navigator: HomePageScreenNavigator) {
+fun ProfileScreen(navigator: ProfileScreenNavigator) {
     ProfileContent(navigator = navigator)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileContent(
-    navigator: HomePageScreenNavigator,
+    navigator: ProfileScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -75,8 +76,8 @@ fun ProfileContent(
             }
         )
         ProfileCard()
-        InformationContent()
-        PreferencesContent()
+        InformationContent(navigator = navigator)
+        PreferencesContent(navigator = navigator)
     }
 }
 
@@ -129,6 +130,7 @@ fun ProfileCardSPreview() {
 
 @Composable
 fun InformationContent(
+    navigator: ProfileScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier
@@ -145,16 +147,28 @@ fun InformationContent(
 }
 @Composable
 fun PreferencesContent(
+    navigator: ProfileScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth().padding(4.dp)
-    ) {
-        SectionText(title = "Preferences", modifier = modifier.padding(12.dp))
-        Divider(color = LocalContentColor.current, modifier = modifier
+        modifier = modifier
             .fillMaxWidth()
-            .width(1.dp))
-        OtherInformationContent(title = "Keluar", icon = Icons.Default.ExitToApp)
+            .padding(4.dp)
+    ) {
+        Column {
+            SectionText(title = "Preferences", modifier = modifier.padding(12.dp))
+            Divider(color = LocalContentColor.current, modifier = modifier
+                .fillMaxWidth()
+                .width(1.dp))
+            OtherInformationContent(title = "Keluar", icon = Icons.Default.ExitToApp, modifier = modifier.clickable {
+                val auth = Firebase.auth
+                auth.signOut()
+                if (auth.currentUser == null){
+                    navigator.logOut()
+                }
+            })
+        }
+
     }
 }
 
@@ -168,7 +182,7 @@ fun OtherInformationContent(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-
+                /*TODO*/
             }
             .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.Start,

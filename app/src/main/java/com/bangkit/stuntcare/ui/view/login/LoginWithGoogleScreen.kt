@@ -57,11 +57,15 @@ fun LoginWithGoogleScreen(
         val googleSignInClient = GoogleSignIn.getClient(context, gso)
         launcher.launch(googleSignInClient.signInIntent)
     }) {
-
+        Text(text = "Login With Google")
     }
 
     when (status.status) {
         LoadingState.Status.SUCCESS -> {
+            val currentUser = Firebase.auth.currentUser
+            if (currentUser != null){
+                navigateToHomePage()
+            }
             Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
         }
         LoadingState.Status.FAILED -> {

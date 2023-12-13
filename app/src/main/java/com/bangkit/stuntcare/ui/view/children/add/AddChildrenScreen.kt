@@ -1,6 +1,7 @@
 package com.bangkit.stuntcare.ui.view.children.add
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,10 +46,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.utils.reduceFileImage
+import com.bangkit.stuntcare.ui.utils.showToast
+import com.bangkit.stuntcare.ui.utils.stringToMediaType
 import com.bangkit.stuntcare.ui.utils.uriToFile
+import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,13 +61,20 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import run.nabla.gallerypicker.picker.GalleryHeader
 import run.nabla.gallerypicker.picker.GalleryPicker
 import java.time.LocalDate
 
 @Composable
-fun AddChildrenScreen(navigator: ChildrenScreenNavigator) {
-    AddChildrenContent(navigator = navigator)
+fun AddChildrenScreen(
+    navigator: ChildrenScreenNavigator, viewModel: AddChildrenViewModel = viewModel(
+        factory = ViewModelFactory.getInstance(
+            LocalContext.current
+        )
+    )
+) {
+    AddChildrenContent(navigator = navigator, viewModel = viewModel)
 }
 
 
@@ -70,6 +82,7 @@ fun AddChildrenScreen(navigator: ChildrenScreenNavigator) {
 @Composable
 fun AddChildrenContent(
     navigator: ChildrenScreenNavigator,
+    viewModel: AddChildrenViewModel,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -82,6 +95,10 @@ fun AddChildrenContent(
     var name by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
+
+    var addChildrenState by remember {
+        mutableStateOf(false)
+    }
 
 
     ConstraintLayout(
@@ -218,25 +235,7 @@ fun AddChildrenContent(
         }
         Button(
             onClick = {
-                currentImageUri?.let {
-                    val imageFile = uriToFile(it, context).reduceFileImage()
-                    val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
-                    val multipartBody = MultipartBody.Part.createFormData(
-                        "photo",
-                        imageFile.name,
-                        requestImageFile
-                    )
-
-                    scope.launch {
-                        try {
-                            val response = withContext(Dispatchers.IO) {
-                                // TODO
-                            }
-                        } catch (e: retrofit2.HttpException) {
-                            // TODO
-                        }
-                    }
-                }
+                addChildrenState = true
             },
             modifier = modifier
                 .padding(8.dp)
@@ -273,6 +272,38 @@ fun AddChildrenContent(
                 },
                 title = { Text(text = "Pilih Tanggal Konsultasi") }
             )
+        }
+    }
+
+    if (addChildrenState) {
+        LaunchedEffect(key1 = addChildrenState) {
+            currentImageUri?.let {
+                val imageFile = uriToFile(it, context).reduceFileImage()
+
+                val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
+                val nameBody = stringToMediaType(name)
+                val birthDateBody = stringToMediaType(birthDate.toString())
+                val weightBody = stringToMediaType(weight)
+                val heightBody = stringToMediaType(height)
+
+                val multipartBody = MultipartBody.Part.createFormData(
+                    "photo",
+                    imageFile.name,
+                    requestImageFile
+                )
+
+                val response = viewModel.addChildren(multipartBody, nameBody, birthDateBody, weightBody, heightBody)
+
+                addChildrenState = if (response.status == "success"){
+                    navigator.backNavigation()
+                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                    false
+                } else {
+                    showToast(response.message, context)
+                    false
+                }
+
+            }
         }
     }
 }
