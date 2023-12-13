@@ -1,10 +1,8 @@
 package com.bangkit.stuntcare.ui.view.children.update
 
 import com.bangkit.stuntcare.R
-import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,10 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bangkit.stuntcare.data.di.Injection
+import com.bangkit.stuntcare.data.remote.response.ApiResponse
 import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import org.w3c.dom.Text
+import java.util.concurrent.Flow
 
 @Composable
 fun UpdateChildrenScreen(
@@ -50,22 +50,24 @@ fun UpdateChildrenScreen(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
+    
     viewModel.getChildrenById(childrenId).let {
         val children = viewModel.children.collectAsState().value
         if (children != null) {
             UpdateChildrenContent(
                 children = children,
-                navigator = navigator
+                navigator = navigator,
+                viewModel = viewModel
             ) // TODO: Tempat Pemanggilan ViewMdoel
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateChildrenContent(
     children: Children,
+    viewModel: UpdateChildrenViewModel,
     navigator: ChildrenScreenNavigator,
     modifier: Modifier = Modifier
 ) {
@@ -114,23 +116,15 @@ fun UpdateChildrenContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = modifier.fillMaxWidth()
         )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = height,
-                label = { Text(text = "Tinggi Badan") },
-                onValueChange = {},
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            Button(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.Home, contentDescription = "Tombol Kamera")
-            }
-        }
+        OutlinedTextField(
+            value = height,
+            label = { Text(text = "Tinggi Badan") },
+            onValueChange = {},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                      },
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(8.dp)

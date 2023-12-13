@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
@@ -142,7 +143,7 @@ fun AddChildrenContent(
                 .fillMaxWidth()
                 .padding(top = 12.dp)
                 .padding(horizontal = 16.dp)
-                .border(BorderStroke(1.dp, color  = Color.Gray))
+                .border(BorderStroke(1.dp, color = Color.Gray))
                 .clickable { isDialogDateShow = true }
                 .constrainAs(tfBirthDate) {
                     top.linkTo(tfName.bottom)
@@ -203,14 +204,17 @@ fun AddChildrenContent(
                 onValueChange = {
                     height = it
                 },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                },
+                trailingIcon = {
+                    Text(text = "CM")
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = modifier
                     .weight(1f)
                     .fillMaxWidth()
             )
-//            Button(onClick = { /*TODO*/ }) {
-//                Icon(imageVector = Icons.Default.Home, contentDescription = "Tombol Kamera")
-//            }
         }
         Button(
             onClick = {

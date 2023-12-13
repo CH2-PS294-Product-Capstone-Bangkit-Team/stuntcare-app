@@ -43,6 +43,8 @@ import coil.compose.AsyncImage
 import com.bangkit.stuntcare.ui.component.SectionText
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun ProfileScreen(navigator: HomePageScreenNavigator) {
@@ -165,6 +167,9 @@ fun OtherInformationContent(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable {
+
+            }
             .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically

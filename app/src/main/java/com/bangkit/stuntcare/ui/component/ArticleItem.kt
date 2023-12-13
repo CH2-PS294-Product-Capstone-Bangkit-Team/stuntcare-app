@@ -54,7 +54,7 @@ fun ArticleItem(
                     text = article.description,
                     fontWeight = FontWeight.Light,
                     fontSize = 8.sp,
-                    modifier = modifier.padding(4.dp)
+                    modifier = modifier.padding(bottom = 4.dp, end = 4.dp, start = 4.dp)
                 )
             }
             Button(

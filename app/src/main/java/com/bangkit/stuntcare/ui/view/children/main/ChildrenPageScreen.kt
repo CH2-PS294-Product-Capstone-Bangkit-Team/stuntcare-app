@@ -1,5 +1,6 @@
 package com.bangkit.stuntcare.ui.view.children.main
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -78,6 +80,7 @@ fun ChildrenScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChildrenContent(
     modifier: Modifier = Modifier,
@@ -100,82 +103,87 @@ fun ChildrenContent(
 
     val childById = viewModel.children.collectAsState().value
 
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .verticalScroll(rememberScrollState())
     ) {
-        Box(modifier = modifier) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = modifier.clickable {
-                    expanded = !expanded
-                }
-            ) {
-                Text(
-                    text = childById!!.name,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp
-                )
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "More"
-                )
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    children.map {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = it.name,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = Color.Black
-                                )
-                            },
-                            onClick = {
-                                childrenId = it.id
-                                viewModel.getChildrenById(childrenId)
-                                expanded = false
-                            }
-                        )
+        item {
+            Box(modifier = modifier) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier.clickable {
+                        expanded = !expanded
+                    }
+                ) {
+                    Text(
+                        text = childById!!.name,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
+                    )
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "More"
+                    )
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        children.map {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = it.name,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.Black
+                                    )
+                                },
+                                onClick = {
+                                    childrenId = it.id
+                                    viewModel.getChildrenById(childrenId)
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
+            Text(
+                text = "Status",
+                fontWeight = FontWeight.Light,
+                fontSize = 12.sp,
+                modifier = modifier.padding(top = 4.dp)
+            )
+            ChildData(
+                children = childById,
+                navigator = navigator,
+                modifier = modifier
+            )
         }
-        Text(
-            text = "Status",
-            fontWeight = FontWeight.Light,
-            fontSize = 12.sp,
-            modifier = modifier.padding(top = 4.dp)
-        )
-        ChildData(
-            children = childById,
-            navigator = navigator,
-            modifier = modifier
-        )
-        TabRow(
-            selectedTabIndex = tabIndex, modifier = modifier
-                .offset(0.dp, 0.dp)
-                .padding(top = 8.dp)
-                .background(Color.Transparent)
-        ) {
-            tabs.forEachIndexed { index, title ->
-                Tab(
-                    text = { Text(text = title) },
-                    selected = tabIndex == index,
-                    onClick = { tabIndex = index }
-                )
-            }
-        }
-        Column() {
-            when (tabIndex) {
-                0 -> StatisticChildrenScreen(navigator)
-                1 -> ChildrenDiary()
+
+        stickyHeader {
+            TabRow(
+                selectedTabIndex = tabIndex, modifier = modifier
+                    .offset(0.dp, 0.dp)
+                    .background(Color.Transparent)
+            ) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        text = { Text(text = title) },
+                        selected = tabIndex == index,
+                        onClick = { tabIndex = index }
+                    )
+                }
             }
         }
 
+        item {
+            Column() {
+                when (tabIndex) {
+                    0 -> StatisticChildrenScreen(navigator)
+                    1 -> ChildrenDiary()
+                }
+            }
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 package com.bangkit.stuntcare.ui.model.children
 
 data class Children (
-    val id: Int,
+    val id: String,
     val name: String,
     val image: String,
     val status: String,

@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bangkit.stuntcare.data.DataRepository
+import com.bangkit.stuntcare.data.remote.response.ApiResponse
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.model.children.Children
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,7 @@ class UpdateChildrenViewModel(private val repository: DataRepository): ViewModel
         }
     }
 
-    suspend fun updateChildren(){
-        // TODO
+    suspend fun updateChildren(id: String, weight: Float, height: Int): ApiResponse {
+        return repository.updateChildren(id = id, height = height, weight = weight)
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -37,6 +38,8 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -63,6 +66,7 @@ import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.model.dummyArticle
 import com.bangkit.stuntcare.ui.model.dummyMenu
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
+import com.bangkit.stuntcare.ui.theme.Green100
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 
 @Composable
@@ -101,21 +105,34 @@ fun HomePageContent(
     data: List<Children>
 ) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
     ) {
-        TopBarSection(
-            navigateToProfile = { homePageScreenNavigator.navigateToProfilePage() },
-            navigateToNotification = { homePageScreenNavigator.navigateToNotificationPage() },
+        Column(
             modifier = modifier
-        )
+        ) {
+            TopBarSection(
+                navigateToProfile = { homePageScreenNavigator.navigateToProfilePage() },
+                navigateToNotification = { homePageScreenNavigator.navigateToNotificationPage() },
+                modifier = modifier
+            )
+        }
         ChildListSection(homePageScreenNavigator = homePageScreenNavigator, data = data)
-        MenuItemSection(navigateToMenu = { })
-        ArticleStuntingSection(
-            homePageScreenNavigator = homePageScreenNavigator
-        )
-        PostSection(
-            homePageScreenNavigator = homePageScreenNavigator
-        )
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .offset(y = (-16).dp)
+                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+        ) {
+            MenuItemSection(navigateToMenu = { })
+            ArticleStuntingSection(
+                homePageScreenNavigator = homePageScreenNavigator
+            )
+            PostSection(
+                homePageScreenNavigator = homePageScreenNavigator
+            )
+        }
     }
 }
 
@@ -138,7 +155,7 @@ fun TopBarSection(
             modifier = modifier
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_child_menu), // Ganti Jadi Logo
+                painter = painterResource(id = R.drawable.logo), // Ganti Jadi Logo
                 contentDescription = null,
                 modifier = modifier
                     .align(Alignment.Top)
@@ -182,7 +199,10 @@ fun ChildListSection(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        modifier = modifier.background(Color.Green)
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Green100)
+            .padding(bottom = 12.dp)
     ) {
         items(data, { it.id }) {
             CardChild(
@@ -199,7 +219,7 @@ fun ChildListSection(
                 contentAlignment = Alignment.CenterStart,
                 modifier = modifier
                     .padding(8.dp, 16.dp)
-                    .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+                    .border(width = 1.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(16.dp))
                     .height(height = 90.dp)
                     .clickable { homePageScreenNavigator.navigateToAddChildren() }
             ) {
@@ -209,11 +229,13 @@ fun ChildListSection(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
+                        tint = MaterialTheme.colorScheme.primary,
                         contentDescription = null,
                         modifier = modifier.size(60.dp)
                     )
                     Text(
                         text = "Tambahkan Anak",
+                        color = LocalContentColor.current,
                         fontWeight = FontWeight.Light,
                         modifier = modifier.padding(horizontal = 12.dp)
                     )
@@ -228,18 +250,23 @@ fun MenuItemSection(
     navigateToMenu: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(
+        modifier = modifier.padding(top = 12.dp)
+    ) {
         SectionText(title = "Menu", modifier = modifier.padding(horizontal = 16.dp))
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = modifier.fillMaxWidth()
         ) {
-            dummyMenu.forEach {menu ->
-                MenuItem(menu = menu, modifier = modifier.clickable { navigateToMenu(menu.imageMenu) })
+            dummyMenu.forEach { menu ->
+                MenuItem(
+                    menu = menu,
+                    modifier = modifier.clickable { navigateToMenu(menu.imageMenu) })
             }
         }
     }
 }
+
 @Composable
 fun ArticleStuntingSection(
     homePageScreenNavigator: HomePageScreenNavigator,

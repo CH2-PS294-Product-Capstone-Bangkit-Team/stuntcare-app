@@ -29,7 +29,7 @@ fun MenuItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier.padding(horizontal = 32.dp)
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Card(
             shape = CardDefaults.outlinedShape,
@@ -38,7 +38,7 @@ fun MenuItem(
             Image(
                 painter = painterResource(id = menu.imageMenu),
                 contentDescription = null,
-                modifier = modifier.fillMaxSize()
+                modifier = modifier.fillMaxSize().padding(8.dp)
             )
         }
         Text(text = menu.title, fontWeight = FontWeight.Medium, fontSize = 12.sp, modifier = modifier.padding(top = 8.dp))

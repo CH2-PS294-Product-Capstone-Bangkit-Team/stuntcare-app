@@ -2,6 +2,7 @@ package com.bangkit.stuntcare.data
 
 import com.bangkit.stuntcare.data.pref.UserModel
 import com.bangkit.stuntcare.data.pref.UserPreference
+import com.bangkit.stuntcare.data.remote.response.ApiResponse
 import com.bangkit.stuntcare.ui.model.Doctor
 import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.model.children.FakeChildren
@@ -42,6 +43,10 @@ class DataRepository (
 
     fun getFirstChildren(): Children{
         return childList[0]
+    }
+
+    suspend fun updateChildren(id: String, weight: Float, height: Int): ApiResponse{
+        return ApiResponse("success", "Data anak berhasil di update")
     }
 
     fun addChildren(children: Children){

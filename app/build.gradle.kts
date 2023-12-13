@@ -87,7 +87,8 @@ dependencies {
 
     // Firebase
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
-    implementation("com.google.android.gms:play-services-auth:20.6.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // DatePicker
     implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
@@ -100,8 +101,10 @@ dependencies {
 
     // Api
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1") //untuk lifecycleScope
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2") //untuk lifecycleScope
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 

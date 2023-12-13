@@ -1,6 +1,7 @@
 package com.bangkit.stuntcare.ui.model
 
 import androidx.annotation.DrawableRes
+import androidx.compose.ui.res.painterResource
 import com.bangkit.stuntcare.R
 
 data class Menu(
@@ -9,7 +10,7 @@ data class Menu(
 )
 
 val dummyMenu = listOf(
-    Menu(R.drawable.ic_child_menu,"Konsultasi"),
-    Menu(R.drawable.ic_child_menu,"Artikel"),
-    Menu(R.drawable.ic_child_menu,"Chat")
+    Menu(R.drawable.menu_consultation,"Konsultasi"),
+    Menu(R.drawable.menu_article,"Artikel"),
+    Menu(R.drawable.menu_chat,"Chat")
 )

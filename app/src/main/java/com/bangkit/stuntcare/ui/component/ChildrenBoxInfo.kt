@@ -51,7 +51,7 @@ fun ChildrenBoxInfo(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .background(MaterialTheme.colorScheme.primary)
                     .fillMaxWidth()
             ) {
                 Text(
