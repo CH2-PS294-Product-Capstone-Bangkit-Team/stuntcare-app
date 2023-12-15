@@ -72,6 +72,7 @@ import com.bangkit.stuntcare.ui.view.home.HomePageScreen
 import com.bangkit.stuntcare.ui.view.login.LoginScreen
 import com.bangkit.stuntcare.ui.view.login.LoginWithGoogleScreen
 import com.bangkit.stuntcare.ui.view.profile.main.ProfileScreen
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.collect
@@ -89,7 +90,7 @@ fun StuntCareApp(
     val currentRoute = navBackStackEntry?.destination?.route
     val thisSession = viewModel.thisSession.collectAsState().value
 
-    val currentUser = Firebase.auth.currentUser
+    val currentUser = FirebaseAuth.getInstance().currentUser
 
     Scaffold(
         bottomBar = {
@@ -225,8 +226,8 @@ fun StuntCareApp(
 
             // Login
             composable(Screen.Login.route) {
-                LoginWithGoogleScreen(
-                    navigateToHomePage = {
+                LoginScreen(
+                    navigateToHome = {
                         navController.navigate(Screen.HomePage.route)
                         navController.clearBackStack(Screen.HomePage.route)
                     }

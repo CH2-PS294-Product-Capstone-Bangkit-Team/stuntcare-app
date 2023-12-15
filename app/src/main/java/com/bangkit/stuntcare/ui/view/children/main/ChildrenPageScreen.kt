@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bangkit.stuntcare.data.di.Injection
+import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ChildrenBoxInfo
 import com.bangkit.stuntcare.ui.component.FoodCard
@@ -134,7 +137,6 @@ fun ChildrenContent(
                                         text = it.name,
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Medium,
-                                        color = Color.Black
                                     )
                                 },
                                 onClick = {
@@ -144,6 +146,21 @@ fun ChildrenContent(
                                 }
                             )
                         }
+
+                        DropdownMenuItem(text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = modifier.fillMaxSize()
+                            ) {
+                                Text(
+                                    text = "Tambah",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                            }
+                        }, onClick = {})
                     }
                 }
             }

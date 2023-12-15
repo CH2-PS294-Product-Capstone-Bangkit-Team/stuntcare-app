@@ -8,4 +8,5 @@
     <string name="welcome_homepage">Selamat %s, %s</string>
     <string name="artikel_stunting">Artikel Stunting</string>
     <string name="take_food_image">Ambil Gambar Makanan</string>
+    <string name="default_web_client_id"></string>
 </resources>

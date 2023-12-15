@@ -41,9 +41,9 @@ fun LoginWithGoogleScreen(
     ){
         val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
         try {
-            val account = task.getResult(ApiException::class.java)
-            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            loginViewModel.signInWithGoogleCredential(credential)
+//            val account = task.getResult(ApiException::class.java)
+//            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+//            loginViewModel.signInWithGoogleCredential(credential)
         } catch (e: ApiException){
             Log.w("Firebase", "Google Sign In Failed", e)
         }

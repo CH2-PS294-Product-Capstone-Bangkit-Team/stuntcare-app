@@ -1,7 +1,14 @@
 package com.bangkit.stuntcare.ui.view.children.add
 
+import android.Manifest
+import android.content.Context
+import android.content.DialogInterface
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,10 +52,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.bangkit.stuntcare.BuildConfig
+import com.bangkit.stuntcare.ui.component.ImageDialogPicker
 import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
+import com.bangkit.stuntcare.ui.utils.checkPermission
+import com.bangkit.stuntcare.ui.utils.getImageUri
 import com.bangkit.stuntcare.ui.utils.reduceFileImage
 import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.utils.stringToMediaType
@@ -62,9 +75,14 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import run.nabla.gallerypicker.permission.rememberRequestPermissionState
 import run.nabla.gallerypicker.picker.GalleryHeader
 import run.nabla.gallerypicker.picker.GalleryPicker
+import java.io.File
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Date
+import java.util.Objects
 
 @Composable
 fun AddChildrenScreen(
@@ -86,11 +104,10 @@ fun AddChildrenContent(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     var currentImageUri: Uri? by remember { mutableStateOf(null) }
     var birthDate: LocalDate? by remember { mutableStateOf(null) }
-    var showPicker by remember { mutableStateOf(false) }
+    var isDialogImageShow by remember { mutableStateOf(false) }
     var isDialogDateShow by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
@@ -100,11 +117,42 @@ fun AddChildrenContent(
         mutableStateOf(false)
     }
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            showToast("Izin telah diberikan", context)
+        } else {
+            showToast("Izin ditolak", context)
+        }
+    }
+
+    val takeFromGallery = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) {
+        if (it != null) {
+            currentImageUri = it
+        } else {
+            showToast("Tidak ada gambar dipilih", context)
+        }
+    }
+
+    val uri = getImageUri(context = context)
+
+    val takeFromCamera = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) {
+        if (it){
+            currentImageUri = uri
+        }
+    }
+
 
     ConstraintLayout(
         modifier = modifier
     ) {
-        val (topBar, imgChildren, tfName, tfBirthDate, tfWeight, tfHeight, btnUpload) = createRefs()
+        val (topBar, imgChildren, tfName, tfBirthDate, tfWeight, tfHeight, btnUpload, dialog) = createRefs()
+
         TopAppBar(
             title = { Text(text = "Update") },
             navigationIcon = {
@@ -127,7 +175,7 @@ fun AddChildrenContent(
                 .clip(CircleShape)
                 .size(150.dp)
                 .clickable {
-                    showPicker = true
+                    isDialogImageShow = true
                 }
                 .constrainAs(imgChildren) {
                     top.linkTo(topBar.bottom, margin = 16.dp)
@@ -135,6 +183,7 @@ fun AddChildrenContent(
                     end.linkTo(parent.end)
                 }
         )
+
         OutlinedTextField(
             value = name,
             label = { Text("Nama") },
@@ -184,6 +233,7 @@ fun AddChildrenContent(
                 modifier = modifier.padding(horizontal = 20.dp)
             )
         }
+
         OutlinedTextField(
             value = weight,
             label = { Text(text = "Berat Badan") },
@@ -200,8 +250,8 @@ fun AddChildrenContent(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-
         )
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -233,6 +283,7 @@ fun AddChildrenContent(
                     .fillMaxWidth()
             )
         }
+
         Button(
             onClick = {
                 addChildrenState = true
@@ -248,19 +299,29 @@ fun AddChildrenContent(
             Text(text = "UPDATE", fontWeight = FontWeight.Medium, fontSize = 16.sp)
         }
 
-        if (showPicker != false) {
-            GalleryPicker(
-                onImageSelected = {
-                    currentImageUri = it
-                    showPicker = false
-                },
-                header = {
-                    GalleryHeader(
-                        onLeftActionClick = { showPicker = false }
+        AnimatedVisibility(visible = isDialogImageShow, modifier = modifier.constrainAs(dialog) {
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }) {
+            if (!checkPermission(Manifest.permission.CAMERA, context)) {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+
+            ImageDialogPicker(
+                takeFromGallery = {
+                    takeFromGallery.launch(
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
                     )
                 },
-                modifier = modifier.fillMaxSize()
-            )
+                takeFromCamera = {
+                    takeFromCamera.launch(uri)
+                },
+                isDialogImageShow = { isDialogImageShow = !isDialogImageShow })
+
         }
 
         if (isDialogDateShow) {
@@ -292,9 +353,15 @@ fun AddChildrenContent(
                     requestImageFile
                 )
 
-                val response = viewModel.addChildren(multipartBody, nameBody, birthDateBody, weightBody, heightBody)
+                val response = viewModel.addChildren(
+                    multipartBody,
+                    nameBody,
+                    birthDateBody,
+                    weightBody,
+                    heightBody
+                )
 
-                addChildrenState = if (response.status == "success"){
+                addChildrenState = if (response.status == "success") {
                     navigator.backNavigation()
                     Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
                     false

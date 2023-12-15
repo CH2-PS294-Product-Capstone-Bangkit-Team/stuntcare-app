@@ -1,7 +1,12 @@
 package com.bangkit.stuntcare.ui.view.register
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -64,8 +69,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
+import com.bangkit.stuntcare.ui.component.ImageDialogPicker
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
+import com.bangkit.stuntcare.ui.utils.checkPermission
+import com.bangkit.stuntcare.ui.utils.getImageUri
 import com.bangkit.stuntcare.ui.utils.reduceFileImage
+import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.utils.uriToFile
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 import kotlinx.coroutines.Dispatchers
@@ -116,6 +125,36 @@ fun RegisterContent(
     var confirmPassword by rememberSaveable { mutableStateOf("") }
 
     val passwordError = password != confirmPassword
+
+    val takeFromGallery = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) {
+        if (it != null) {
+            currentImageUri = it
+        } else {
+            showToast("Tidak ada gambar dipilih", context)
+        }
+    }
+
+    val uri = getImageUri(context = context)
+
+    val takeFromCamera = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) {
+        if (it) {
+            currentImageUri = uri
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            showToast("Izin telah diberikan", context)
+        } else {
+            showToast("Izin ditolak", context)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -404,21 +443,39 @@ fun RegisterContent(
             }
         }
     }
-    if (showPicker != false) {
-        GalleryPicker(
-            onImageSelected = {
-                currentImageUri = it
-                showPicker = false
-            },
-            header = {
-                GalleryHeader(
-                    onLeftActionClick = { showPicker = false }
+
+    AnimatedVisibility(visible = showPicker, modifier = modifier.fillMaxSize()) {
+        if (!checkPermission(Manifest.permission.CAMERA, context)) {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+
+        ImageDialogPicker(
+            takeFromGallery = {
+                takeFromGallery.launch(
+                    PickVisualMediaRequest(
+                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                    )
                 )
             },
-            modifier = modifier.fillMaxSize()
+            takeFromCamera = {
+                takeFromCamera.launch(uri)
+            },
+            isDialogImageShow = { showPicker = !showPicker })
+
+    }
+
+    if (isDialogDateShow) {
+        DatePickerDialog(
+            onDismissRequest = { isDialogDateShow = false },
+            onDateChange = {
+                birthDate = it
+                isDialogDateShow = false
+            },
+            title = { Text(text = "Pilih Tanggal Konsultasi") }
         )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

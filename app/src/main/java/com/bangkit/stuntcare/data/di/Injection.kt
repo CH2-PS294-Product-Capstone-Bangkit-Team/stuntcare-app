@@ -4,10 +4,16 @@ import android.content.Context
 import com.bangkit.stuntcare.data.DataRepository
 import com.bangkit.stuntcare.data.pref.UserPreference
 import com.bangkit.stuntcare.data.pref.dataStore
+import com.bangkit.stuntcare.data.remote.ApiConfig
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 object Injection {
     fun provideRepository(context: Context): DataRepository {
         val pref = UserPreference.getInstance(context.dataStore)
-        return DataRepository.getInstance(userPreference = pref)
+        val user = runBlocking { pref.getSession().first() }
+        val apiService = ApiConfig.getApiService(user.token)
+
+        return DataRepository.getInstance(userPreference = pref, apiService = apiService)
     }
 }

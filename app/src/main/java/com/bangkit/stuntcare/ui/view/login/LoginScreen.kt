@@ -38,7 +38,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bangkit.stuntcare.data.DataRepository
 import com.bangkit.stuntcare.data.pref.UserModel
+import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
+import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,28 +49,29 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun LoginScreen(
-    loginGoogle: () -> Unit,
+    navigateToHome: () -> Unit,
     loginViewModel: LoginViewModel = viewModel(factory = ViewModelFactory.getInstance(LocalContext.current))
 ) {
     LoginContent(
-        loginViewModel = loginViewModel
+        loginViewModel = loginViewModel,
+        navigateToHome = navigateToHome
     )
 }
 
 @Composable
 fun LoginContent(
     loginViewModel: LoginViewModel,
+    navigateToHome: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var email by rememberSaveable {
         mutableStateOf("")
     }
-
-    val coroutineScope = rememberCoroutineScope()
-
     var password by remember {
         mutableStateOf("")
     }
+
+    val context = LocalContext.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -146,12 +149,15 @@ fun LoginContent(
 
                 Button(
                     onClick = {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val response = withContext(Dispatchers.IO) {
-                                /*TODO*/
+                        loginViewModel.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    navigateToHome()
+                                } else {
+                                    showToast(it.exception.toString(), context)
+                                }
                             }
-                            loginViewModel.saveSession(UserModel(email, "", "", true))
-                        }
+
                     },
                     contentPadding = PaddingValues(vertical = 4.dp, horizontal = 24.dp),
                     modifier = modifier
@@ -184,7 +190,7 @@ fun LoginContent(
                         textDecoration = TextDecoration.Underline,
                         modifier = modifier
                             .padding(start = 8.dp)
-                            .clickable {  }
+                            .clickable { }
                     )
                 }
             }
