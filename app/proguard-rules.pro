@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepattributes Signature
+-keepattributes Exceptions
+-dontnote okhttp3.**, retrofit2.**
+-dontwarn retrofit2.**
+-keep interface com.yourretrofitinterface.** { *; }
+-keep class retrofit2.** { *; }
+-keepclasseswithmembers class * {
+     @retrofit2.http.* <methods>;
+ }

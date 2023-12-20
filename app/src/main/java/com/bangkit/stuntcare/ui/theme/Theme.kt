@@ -25,13 +25,13 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Green500,
-    primaryContainer = Green300,
+    primary = Blue500,
+    primaryContainer = Color.White,
     secondary = PurpleGrey40,
     tertiary = Pink40,
-    secondaryContainer = Green200, // Selected Background Color
-    onSecondaryContainer = Green700, // Selected Icon Color
-    surfaceVariant = Green200, // Card Color
+    secondaryContainer = Blue200, // Selected Background Color
+    onSecondaryContainer = Blue700, // Selected Icon Color
+    surfaceVariant = Blue200, // Card Color
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

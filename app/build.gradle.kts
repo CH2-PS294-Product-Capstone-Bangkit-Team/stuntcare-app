@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.bangkit.stuntcare"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.android.engage:engage-core:1.3.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -90,9 +91,12 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
 
     // DatePicker
     implementation("com.marosseleng.android:compose-material3-datetime-pickers:0.7.2")
+    implementation ("co.yml:ycharts:2.1.0")
 
     // Constraint Layout
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
@@ -108,5 +112,9 @@ dependencies {
 
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+//    implementation ("androidx.compose.ui:ui-util:1.9.4")
+    implementation ("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
 
 }

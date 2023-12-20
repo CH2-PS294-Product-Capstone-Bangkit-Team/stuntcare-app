@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class StuntCareAppViewModel (private val repository: DataRepository): ViewModel(){
 
-    private val _thisSession: MutableStateFlow<UserModel> = MutableStateFlow(UserModel("", "", "", false))
+    private val _thisSession: MutableStateFlow<UserModel> = MutableStateFlow(UserModel("", "", "", "", false))
     val thisSession: StateFlow<UserModel>
         get() = _thisSession
 

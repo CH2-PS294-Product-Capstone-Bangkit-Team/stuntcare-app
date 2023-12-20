@@ -9,4 +9,28 @@
     <string name="artikel_stunting">Artikel Stunting</string>
     <string name="take_food_image">Ambil Gambar Makanan</string>
     <string name="default_web_client_id"></string>
+    <string name="tvStuntingDescription"><b>Deskripsi:</b> %s</string>
+    <string name="tvStuntingAction"><b>Tindakan Rekomendasi:</b> %s</string>
+    <string name="range_nutrition">%s / %s</string>
+    <string name="nutrition_reach">%d%</string>
+    <string name="slider_1">Pantau Pertumbuhan Si Kecil Secara Efektif</string>
+    <string name="description_1">Dengan fitur pemantauan pertumbuhan. Anda dapat dengan mudah memantau setiap tahap pertumbuhan anak. Grafik yang informatif dan notifikasi real-time akan membantu Anda tetap terhubung dengan perkembangan si kecil.</string>
+    <string name="slider_2">Nutrisi Optimal untuk Si Kecil</string>
+    <string name="description_2">Dapatkan rekomendasi makanan yang tepat untuk anak Anda dan pastikan mereka mendapatkan nutrisi yang dibutuhkan.</string>
+    <string name="slider_3">Tangkal Stunting, Ciptakan Masa Depan Sehat</string>
+    <string name="description_3">Kenali risiko stunting dengan informasi yang akurat. Aplikasi kami memberikan panduan praktis untuk mencegah stunting dan menjamin anak Anda tumbuh optimal. Bersama, kita bisa menciptakan masa depan sehat untuk si kecil!</string>
+    <string name="slider_4">Konsultasi Langsung untuk Pertumbuhan yang Sehat</string>
+    <string name="description_4">Dapatkan pandangan ahli langsung dari ahli gizi dan dokter anak tanpa meninggalkan rumah. Fitur konsultasi kami memberikan kemudahan akses untuk menjawab setiap pertanyaan Anda seputar kesehatan dan pertumbuhan anak.</string>
+    <string-array name="title">
+        <item>Pantau Pertumbuhan Si Kecil Secara Efektif</item>
+        <item>Nutrisi Optimal untuk Si Kecil</item>
+        <item>Tangkal Stunting, Ciptakan Masa Depan Sehat</item>
+        <item>Konsultasi Langsung untuk Pertumbuhan yang Sehat</item>
+    </string-array>
+    <string-array name="description">
+        <item> </item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
 </resources>

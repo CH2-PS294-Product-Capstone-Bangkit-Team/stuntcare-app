@@ -40,6 +40,14 @@ sealed class Screen (val route: String){
 
     object AddChildren: Screen("children/add")
 
+    object HistoryGrowthChildren: Screen("children/{childrenId}/history"){
+        fun createRoute(childrenId: String) = "children/$childrenId/history"
+    }
+
+    object ProfileChildren: Screen("children/{childrenId}/profile"){
+        fun createRoute(childrenId: String) = "children/$childrenId/profile"
+    }
+
     // Consultation Route
     object DetailDoctor: Screen("consultation/{doctorId}"){
         fun createRoute(doctorId: Int) = "consultation/$doctorId"
@@ -62,4 +70,8 @@ sealed class Screen (val route: String){
 
     // Register
     object Register: Screen("register")
+
+    object FoodClassification: Screen("food_classification")
+
+    object WelcomePage: Screen("welcome_page")
 }

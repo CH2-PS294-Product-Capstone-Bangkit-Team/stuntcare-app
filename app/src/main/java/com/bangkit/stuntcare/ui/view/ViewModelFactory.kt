@@ -6,15 +6,18 @@ import androidx.lifecycle.ViewModelProvider
 import com.bangkit.stuntcare.StuntCareAppViewModel
 import com.bangkit.stuntcare.data.DataRepository
 import com.bangkit.stuntcare.data.di.Injection
-import com.bangkit.stuntcare.ui.view.children.add.AddChildrenViewModel
-import com.bangkit.stuntcare.ui.view.children.main.ChildrenViewModel
-import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenViewModel
-import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorViewModel
-import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationViewModel
-import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleViewModel
-import com.bangkit.stuntcare.ui.view.home.HomeViewModel
-import com.bangkit.stuntcare.ui.view.login.LoginViewModel
-import com.bangkit.stuntcare.ui.view.register.RegisterViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.add.AddChildrenViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.food_classification.FoodClassificationViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.history.GrowthHistoryChildrenViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.main.ChildrenViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.profile.ChildrenProfileViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.update.UpdateChildrenViewModel
+import com.bangkit.stuntcare.ui.view.parent.consultation.detail.DetailDoctorViewModel
+import com.bangkit.stuntcare.ui.view.parent.consultation.main.ConsultationViewModel
+import com.bangkit.stuntcare.ui.view.parent.consultation.schedule.SetScheduleViewModel
+import com.bangkit.stuntcare.ui.view.parent.home.HomeViewModel
+import com.bangkit.stuntcare.ui.view.parent.login.LoginViewModel
+import com.bangkit.stuntcare.ui.view.parent.register.RegisterViewModel
 
 class ViewModelFactory(private val repository: DataRepository) :
     ViewModelProvider.NewInstanceFactory() {
@@ -60,6 +63,18 @@ class ViewModelFactory(private val repository: DataRepository) :
 
             modelClass.isAssignableFrom(AddChildrenViewModel::class.java) -> {
                 AddChildrenViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(GrowthHistoryChildrenViewModel::class.java) -> {
+                GrowthHistoryChildrenViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(ChildrenProfileViewModel::class.java) -> {
+                ChildrenProfileViewModel(repository) as T
+            }
+
+            modelClass.isAssignableFrom(FoodClassificationViewModel::class.java) -> {
+                FoodClassificationViewModel(repository) as T
             }
 
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)

@@ -26,6 +26,7 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
     fun getSession(): Flow<UserModel> {
         return dataStore.data.map {
             UserModel(
+                it[USER_ID] ?: "",
                 it[EMAIL_KEY] ?: "",
                 it[ROLE_KEY] ?: "",
                 it[TOKEN_KEY] ?: "",
@@ -44,6 +45,7 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
         @Volatile
         private var INSTANCE: UserPreference? = null
 
+        private val USER_ID = stringPreferencesKey("id")
         private val EMAIL_KEY = stringPreferencesKey("email")
         private val TOKEN_KEY = stringPreferencesKey("token")
         private val ROLE_KEY = stringPreferencesKey("role")

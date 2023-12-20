@@ -60,18 +60,23 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
-import com.bangkit.stuntcare.ui.view.children.add.AddChildrenScreen
-import com.bangkit.stuntcare.ui.view.children.main.ChildrenScreen
-import com.bangkit.stuntcare.ui.view.children.update.UpdateChildrenScreen
-import com.bangkit.stuntcare.ui.view.community.CommunityScreen
-import com.bangkit.stuntcare.ui.view.consultation.chat.ChatScreen
-import com.bangkit.stuntcare.ui.view.consultation.detail.DetailDoctorScreen
-import com.bangkit.stuntcare.ui.view.consultation.main.ConsultationScreen
-import com.bangkit.stuntcare.ui.view.consultation.schedule.SetScheduleScreen
-import com.bangkit.stuntcare.ui.view.home.HomePageScreen
-import com.bangkit.stuntcare.ui.view.login.LoginScreen
-import com.bangkit.stuntcare.ui.view.login.LoginWithGoogleScreen
-import com.bangkit.stuntcare.ui.view.profile.main.ProfileScreen
+import com.bangkit.stuntcare.ui.view.parent.children.add.AddChildrenScreen
+import com.bangkit.stuntcare.ui.view.parent.children.food_classification.FoodClassificationScreen
+import com.bangkit.stuntcare.ui.view.parent.children.history.GrowthHistoryScreen
+import com.bangkit.stuntcare.ui.view.parent.children.main.ChildrenScreen
+import com.bangkit.stuntcare.ui.view.parent.children.profile.ChildrenProfileScreen
+import com.bangkit.stuntcare.ui.view.parent.children.update.UpdateChildrenScreen
+import com.bangkit.stuntcare.ui.view.parent.community.CommunityScreen
+import com.bangkit.stuntcare.ui.view.parent.consultation.chat.ChatScreen
+import com.bangkit.stuntcare.ui.view.parent.consultation.detail.DetailDoctorScreen
+import com.bangkit.stuntcare.ui.view.parent.consultation.main.ConsultationScreen
+import com.bangkit.stuntcare.ui.view.parent.consultation.schedule.SetScheduleScreen
+import com.bangkit.stuntcare.ui.view.parent.home.HomePageScreen
+import com.bangkit.stuntcare.ui.view.parent.login.LoginScreen
+import com.bangkit.stuntcare.ui.view.parent.login.LoginWithGoogleScreen
+import com.bangkit.stuntcare.ui.view.parent.profile.main.ProfileScreen
+import com.bangkit.stuntcare.ui.view.parent.register.RegisterScreen
+import com.bangkit.stuntcare.ui.view.parent.welcome.WelcomePageScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -106,7 +111,7 @@ fun StuntCareApp(
         NavHost(
             navController = navController,
             startDestination = if (currentUser == null) {
-                Screen.Login.route
+                Screen.WelcomePage.route
             } else {
                 Screen.HomePage.route
             },
@@ -152,6 +157,28 @@ fun StuntCareApp(
 
             composable(route = Screen.AddChildren.route) {
                 AddChildrenScreen(navigator = ChildrenScreenNavigator(navController))
+            }
+
+            composable(
+                route = Screen.HistoryGrowthChildren.route,
+                arguments = listOf(navArgument("childrenId"){type = NavType.StringType})
+            ){
+                val id = it.arguments?.getString("childrenId")
+                GrowthHistoryScreen(
+                    childrenId = id,
+                    navigator = ChildrenScreenNavigator(navController)
+                )
+            }
+
+            composable(
+                route = Screen.ProfileChildren.route,
+                arguments = listOf(navArgument("childrenId"){type = NavType.StringType})
+            ){
+                val id = it.arguments?.getString("childrenId")
+                ChildrenProfileScreen(
+                    childrenId = id,
+                    navigator = ChildrenScreenNavigator(navController)
+                )
             }
 
 
@@ -230,8 +257,27 @@ fun StuntCareApp(
                     navigateToHome = {
                         navController.navigate(Screen.HomePage.route)
                         navController.clearBackStack(Screen.HomePage.route)
+                    },
+                    navigateToRegister = {
+                        navController.navigate(Screen.Register.route)
                     }
                 )
+            }
+
+            composable(Screen.Register.route){
+                RegisterScreen(
+                    navigateToLogin = { navController.navigate(Screen.Login.route) }
+                )
+            }
+
+            composable(Screen.FoodClassification.route){
+                FoodClassificationScreen()
+            }
+
+            composable(Screen.WelcomePage.route){
+                WelcomePageScreen(
+                    navigateToLoginScreen = { navController.navigate(Screen.Login.route) },
+                    navigateToRegisterScreen = { navController.navigate(Screen.Register.route) })
             }
         }
     }
@@ -242,52 +288,46 @@ fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val navigationItem = listOf(
-        NavigationItem(
-            title = stringResource(id = R.string.menu_home),
-            icon = painterResource(id = R.drawable.bottom_bar_home),
-            screen = Screen.HomePage,
-        ),
-        NavigationItem(
-            title = stringResource(id = R.string.menu_children),
-            icon = painterResource(id = R.drawable.ic_child_menu),
-            screen = Screen.Children,
-        ),
-        NavigationItem(
-            title = stringResource(R.string.menu_consultation),
-            icon = painterResource(id = R.drawable.bottom_bar_consultation),
-            screen = Screen.Consultation,
-        ),
-        NavigationItem(
-            title = stringResource(R.string.menu_community),
-            icon = painterResource(id = R.drawable.bottom_bar_community),
-            screen = Screen.Community,
-        )
-    )
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            .shadow(
-                elevation = 2.dp,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                clip = false
+    NavigationBar {
+        val navigationItem = listOf(
+            NavigationItem(
+                title = stringResource(id = R.string.menu_home),
+                icon = painterResource(id = R.drawable.bottom_bar_home),
+                screen = Screen.HomePage,
+            ),
+            NavigationItem(
+                title = stringResource(id = R.string.menu_children),
+                icon = painterResource(id = R.drawable.ic_child_menu),
+                screen = Screen.Children,
+            ),
+            NavigationItem(
+                title = stringResource(R.string.menu_consultation),
+                icon = painterResource(id = R.drawable.bottom_bar_consultation),
+                screen = Screen.Consultation,
+            ),
+            NavigationItem(
+                title = stringResource(R.string.menu_community),
+                icon = painterResource(id = R.drawable.bottom_bar_community),
+                screen = Screen.Community,
             )
-            .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        navigationItem.forEach { screen ->
-            AddItem(
-                screen = screen,
-                currentDestination = navBackStackEntry?.destination,
-                navController = navController
+        )
+        navigationItem.map {
+            NavigationBarItem(
+                icon = { Icon(painter = it.icon, contentDescription = it.title) },
+                label = { Text(text = it.title) },
+                selected = currentRoute == it.screen.route,
+                onClick = {
+                    navController.navigate(it.screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }
-
 }
 
 @Composable

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bangkit.stuntcare.ui.theme.Blue500
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
 
 @Composable
@@ -45,8 +47,8 @@ fun ChildrenBoxInfo(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
-                .background(Color.White)
-                .size(95.dp)
+                .size(height = 88.dp, width = 80.dp)
+                .background(Blue500)
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -56,14 +58,25 @@ fun ChildrenBoxInfo(
             ) {
                 Text(
                     text = title,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 12.sp,
-                    modifier = modifier
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 8.sp,
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = modifier.padding(vertical = 8.dp, horizontal = 4.dp)
                 )
             }
 
-            Text(text = data, fontWeight = FontWeight.Bold, fontSize = 32.sp)
-            Text(text = unit, fontWeight = FontWeight.Light, fontSize = 10.sp)
+            Text(
+                text = data,
+                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                color = MaterialTheme.colorScheme.primaryContainer
+            )
+            Text(
+                text = unit,
+                fontWeight = FontWeight.Light,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.primaryContainer
+            )
         }
     }
 }

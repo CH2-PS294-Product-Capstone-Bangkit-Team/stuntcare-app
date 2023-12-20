@@ -1,53 +1,26 @@
 {
   "project_info": {
-    "project_number": "821002326836",
-    "firebase_url": "https://cc-stuntcare-demo-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "cc-stuntcare-demo",
-    "storage_bucket": "cc-stuntcare-demo.appspot.com"
+    "project_number": "281003572526",
+    "project_id": "capstone-project-stuntcare",
+    "storage_bucket": "capstone-project-stuntcare.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:821002326836:android:11f74c435cf2a5b0020b61",
+        "mobilesdk_app_id": "1:281003572526:android:cfbe76104bfe84e144cebf",
         "android_client_info": {
           "package_name": "com.bangkit.stuntcare"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "821002326836-ak9hpv350j7jb8ol6skfd2an5qop3ppu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.bangkit.stuntcare",
-            "certificate_hash": "ce771050bd2a6be38c6728d62df613e7085bed21"
-          }
-        },
-        {
-          "client_id": "821002326836-j7pe61km1u4f5qrcv5mmf21v80ucnmu7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.bangkit.stuntcare",
-            "certificate_hash": "9d81945d4cc46f54093cbd8e306f07f751143fbf"
-          }
-        },
-        {
-          "client_id": "821002326836-5vqlr6emvlmslj6ssh5pjr236fuebml4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAig0PwptjWAng28Bs5AJn5eMSIVtbOZC4"
+          "current_key": "AIzaSyDPIwgM6cBC9i0MPMZiqrFE693-7Qxf_uk"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "821002326836-5vqlr6emvlmslj6ssh5pjr236fuebml4.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
