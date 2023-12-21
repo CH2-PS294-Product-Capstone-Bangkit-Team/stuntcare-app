@@ -12,6 +12,8 @@ import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
+import com.bangkit.stuntcare.data.remote.response.DetailDoctorResponse
+import com.bangkit.stuntcare.data.remote.response.DoctorResponse
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
 import com.bangkit.stuntcare.data.remote.response.FoodRecommendationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
@@ -152,14 +154,12 @@ class DataRepository(
     }
 
     // Data Doctor
-    fun getAllDoctor(): Flow<List<Doctor>> {
-        return flowOf(doctorList)
+    suspend fun getAllDoctor(): Flow<DoctorResponse> {
+        return flowOf(apiServiceFromCc.getDoctor())
     }
 
-    fun getDoctorById(id: Int): Doctor {
-        return doctorList.first {
-            it.id == id
-        }
+    suspend fun getDoctorById(id: String): Flow<DetailDoctorResponse> {
+        return flowOf(apiServiceFromCc.getDoctorById(id))
     }
 
     fun searchDoctor(query: String): List<Doctor> {

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bangkit.stuntcare.data.DataRepository
+import com.bangkit.stuntcare.data.remote.response.DoctorResponse
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.model.Doctor
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +15,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ConsultationViewModel(private val repository: DataRepository): ViewModel() {
-    private val _uiState: MutableStateFlow<UiState<List<Doctor>>> = MutableStateFlow(UiState.Loading)
-    val uiState: StateFlow<UiState<List<Doctor>>>
+    private val _uiState: MutableStateFlow<UiState<DoctorResponse>> = MutableStateFlow(UiState.Loading)
+    val uiState: StateFlow<UiState<DoctorResponse>>
         get() = _uiState
 
     private val _listDoctor: MutableStateFlow<List<Doctor>?> = MutableStateFlow(null)

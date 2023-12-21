@@ -33,6 +33,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -53,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -90,6 +92,8 @@ import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.compose.style.ChartStyle
+import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.chart.line.LineChart
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.entry.entriesOf
@@ -108,30 +112,21 @@ fun ChildrenScreen(
     navigator: ChildrenScreenNavigator
 ) {
 
-
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(key1 = context) {
-        viewModel.getAllChildren()
-    }
 
     viewModel.allChild.collectAsState(UiState.Loading).value.let { childItem ->
         when (childItem) {
             is UiState.Loading -> {
-                scope.launch {
-                }
+                viewModel.getAllChildren()
             }
 
             is UiState.Success -> {
                 val listChild = childItem.data
-
-                LaunchedEffect(key1 = childrenId ?: listChild.first().id) {
-                    viewModel.getChildrenById(childrenId ?: listChild.first().id)
-                }
                 viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
                     when (it) {
                         is UiState.Loading -> {
+                            viewModel.getChildrenById(childrenId ?: listChild.first().id)
                         }
 
                         is UiState.Success -> {
@@ -363,6 +358,7 @@ fun ChildrenTestScreen(
                 } else {
                     Blue500
                 },
+                textAlign = TextAlign.Center,
                 modifier = modifier
                     .clip(RoundedCornerShape(topEnd = 16.dp))
                     .background(if (statisticRowSelected) Blue100 else Color.White)
@@ -380,6 +376,7 @@ fun ChildrenTestScreen(
                     Blue500
                 },
                 fontSize = 12.sp,
+                textAlign = TextAlign.Center,
                 modifier = modifier
                     .clip(RoundedCornerShape(topStart = 16.dp))
                     .background(if (!statisticRowSelected) Blue100 else Color.White)
@@ -461,12 +458,12 @@ fun ChildrenDataSection(
         ) {
             ChildrenBoxInfo(
                 title = "Tinggi Badan",
-                data = removeTrailingZeros(children.data.growthHistory.first().height),
+                data = children.data.growthHistory.first().height.toInt().toString(),
                 unit = "cm"
             )
             ChildrenBoxInfo(
                 title = "Berat Badan",
-                data = removeTrailingZeros(children.data.growthHistory.first().weight),
+                data = children.data.growthHistory.first().weight.toInt().toString(),
                 unit = "kg"
             )
             ChildrenBoxInfo(
@@ -492,8 +489,11 @@ fun ChildrenStatisticSection(
     children: DetailChildrenResponse,
     modifier: Modifier = Modifier
 ) {
+    var isHeight by remember {
+        mutableStateOf(true)
+    }
     val growthValue: Array<Float> = children.data.growthHistory.reversed().map {
-        it.weight
+        if (isHeight) it.height else it.weight
     }.toTypedArray()
 
     val color: List<Color> = listOf(Color.Green, Color.Blue)
@@ -522,15 +522,27 @@ fun ChildrenStatisticSection(
 
         Row(
             verticalAlignment = Alignment.Bottom, modifier = modifier
+                .clip(RoundedCornerShape(16.dp))
                 .background(Grey100)
                 .padding(12.dp)
         ) {
-            Chart(
-                chart = lineChart(),
-                model = chartEntryModel,
-                startAxis = rememberStartAxis(),
-                bottomAxis = rememberBottomAxis(),
-            )
+            ProvideChartStyle(
+                ChartStyle.fromColors(
+                    axisLabelColor = LocalContentColor.current,
+                    axisGuidelineColor = Color.Transparent,
+                    axisLineColor = LocalContentColor.current,
+                    entityColors = listOf(if (isHeight) Green700 else Yellow600),
+                    elevationOverlayColor = Color.Cyan
+                )
+            ) {
+                Chart(
+                    chart = lineChart(),
+                    model = chartEntryModel,
+                    startAxis = rememberStartAxis(),
+                    bottomAxis = rememberBottomAxis(),
+                )
+            }
+
         }
 
         Row(
@@ -541,13 +553,13 @@ fun ChildrenStatisticSection(
                 .padding(top = 12.dp)
         ) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { isHeight = true },
                 colors = ButtonDefaults.buttonColors(containerColor = Green700)
             ) {
                 Text(text = "Tinggi Badan")
             }
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { isHeight = false },
                 colors = ButtonDefaults.buttonColors(containerColor = Yellow600)
             ) {
                 Text(text = "Berat Badan")
@@ -627,7 +639,25 @@ fun ChildrenDiagnosisSection(
                             stuntingStatus = !stuntingStatus
                         }
                         .weight(0.3f),
-                    colors = CardDefaults.cardColors(containerColor = Green600)
+                    colors = CardDefaults.cardColors(
+                        containerColor = when (statusChildren.stunting.message) {
+                            "Stunting Akut" -> {
+                                Color.Red
+                            }
+
+                            "Stunting" -> {
+                                Yellow600
+                            }
+
+                            "Tinggi Normal" -> {
+                                Green600
+                            }
+
+                            else -> {
+                                Color.Gray
+                            }
+                        }
+                    )
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -639,7 +669,7 @@ fun ChildrenDiagnosisSection(
                             fontWeight = FontWeight.SemiBold,
                             style = TextStyle(
                                 shadow = Shadow(
-                                    color = Color.DarkGray,
+                                    color = Grey100,
                                     blurRadius = 10f,
                                     offset = Offset(0.5f, 2f)
                                 )
@@ -718,7 +748,25 @@ fun ChildrenDiagnosisSection(
                             underweightStatus = !underweightStatus
                         }
                         .weight(0.3f),
-                    colors = CardDefaults.cardColors(containerColor = Green600)
+                    colors = CardDefaults.cardColors(
+                        containerColor = when (statusChildren.underweight.message) {
+                            "Kurus Akut" -> {
+                                Color.Red
+                            }
+
+                            "Kurus" -> {
+                                Yellow600
+                            }
+
+                            "Berat Normal" -> {
+                                Green600
+                            }
+
+                            else -> {
+                                Color.Gray
+                            }
+                        }
+                    )
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -730,7 +778,7 @@ fun ChildrenDiagnosisSection(
                             fontWeight = FontWeight.SemiBold,
                             style = TextStyle(
                                 shadow = Shadow(
-                                    color = Color.DarkGray,
+                                    color = Grey100,
                                     blurRadius = 10f,
                                     offset = Offset(0.5f, 2f)
                                 )
@@ -811,7 +859,25 @@ fun ChildrenDiagnosisSection(
                             wastingStatus = !wastingStatus
                         }
                         .weight(0.3f),
-                    colors = CardDefaults.cardColors(containerColor = Green600)
+                    colors = CardDefaults.cardColors(
+                        containerColor = when (statusChildren.wasted.message) {
+                            "SAM", "Obesitas" -> {
+                                Color.Red
+                            }
+
+                            "MAM", "Kelebihan Berat" -> {
+                                Yellow600
+                            }
+
+                            "Gizi Normal" -> {
+                                Green600
+                            }
+
+                            else -> {
+                                Color.Gray
+                            }
+                        }
+                    )
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -1149,7 +1215,7 @@ fun DailyChildren(
                                             showToast("Anda Telah Mengisi Makanan Ini", context)
                                         }
                                     )
-                                }else{
+                                } else {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     FoodCard(
                                         title = "Makan Malam",

@@ -62,6 +62,7 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.bangkit.stuntcare.ui.view.parent.children.add.AddChildrenScreen
 import com.bangkit.stuntcare.ui.view.parent.children.food_classification.FoodClassificationScreen
+import com.bangkit.stuntcare.ui.view.parent.children.high_measurement.AruCoRulesScreen
 import com.bangkit.stuntcare.ui.view.parent.children.high_measurement.HighMeasurementScreen
 import com.bangkit.stuntcare.ui.view.parent.children.history.GrowthHistoryScreen
 import com.bangkit.stuntcare.ui.view.parent.children.main.ChildrenScreen
@@ -71,6 +72,7 @@ import com.bangkit.stuntcare.ui.view.parent.community.CommunityScreen
 import com.bangkit.stuntcare.ui.view.parent.consultation.chat.ChatScreen
 import com.bangkit.stuntcare.ui.view.parent.consultation.detail.DetailDoctorScreen
 import com.bangkit.stuntcare.ui.view.parent.consultation.main.ConsultationScreen
+import com.bangkit.stuntcare.ui.view.parent.consultation.room_chat.RoomChatScreen
 import com.bangkit.stuntcare.ui.view.parent.consultation.schedule.SetScheduleScreen
 import com.bangkit.stuntcare.ui.view.parent.home.HomePageScreen
 import com.bangkit.stuntcare.ui.view.parent.login.LoginScreen
@@ -146,6 +148,48 @@ fun StuntCareApp(
                 arguments = listOf(navArgument("menuId") { type = NavType.IntType })
             ) {
                 val id = it.arguments?.getInt("menuId") ?: -1
+
+                when (id) {
+                    1 -> {
+                        navController.navigate(Screen.Children.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+
+                    2 -> {
+                        navController.navigate(Screen.Children.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+
+                    3 -> {
+                        navController.navigate(Screen.Community.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+
+                    4 -> {
+                        navController.navigate(Screen.Community.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                }
             }
 
 
@@ -191,9 +235,9 @@ fun StuntCareApp(
 
             composable(
                 route = Screen.DetailDoctor.route,
-                arguments = listOf(navArgument("doctorId") { type = NavType.IntType })
+                arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
             ) {
-                val doctorId = it.arguments?.getInt("doctorId") ?: 0
+                val doctorId = it.arguments?.getString("doctorId") ?: ""
                 DetailDoctorScreen(
                     doctorId = doctorId,
                     navigator = ConsultationScreenNavigator(navController)
@@ -203,7 +247,7 @@ fun StuntCareApp(
             composable(
                 route = Screen.SetSchedule.route
             ) {
-                val doctorId = it.arguments?.getInt("doctorId") ?: 0
+                val doctorId = it.arguments?.getString("doctorId") ?: ""
                 SetScheduleScreen(
                     doctorId = doctorId,
                     navigator = ConsultationScreenNavigator(navController)
@@ -212,6 +256,10 @@ fun StuntCareApp(
 
             composable(Screen.Chat.route) {
                 ChatScreen(navigator = ConsultationScreenNavigator(navController = navController))
+            }
+
+            composable(Screen.RoomChat.route) {
+                RoomChatScreen(navigator = ConsultationScreenNavigator(navController))
             }
 
 
@@ -281,7 +329,11 @@ fun StuntCareApp(
             ) {
                 val childrenId = it.arguments?.getString("childrenId") ?: ""
                 val schedule = it.arguments?.getString("schedule") ?: ""
-                FoodClassificationScreen(childrenId, schedule, ChildrenScreenNavigator(navController))
+                FoodClassificationScreen(
+                    childrenId,
+                    schedule,
+                    ChildrenScreenNavigator(navController)
+                )
             }
 
             composable(Screen.HeightMeasurement.route) {
@@ -295,13 +347,9 @@ fun StuntCareApp(
                     navigateToLoginScreen = { navController.navigate(Screen.Login.route) },
                     navigateToRegisterScreen = { navController.navigate(Screen.Register.route) })
             }
-
-            composable(
-                route = Screen.ChildrenWithId.route,
-                arguments = listOf(navArgument("childrenId"){type = NavType.StringType})
-            ){
-                val id = it.arguments?.getString("childrenId") ?: ""
-                ChildrenScreen(navigator = ChildrenScreenNavigator(navController), childrenId = id)
+            
+            composable(Screen.AruCoRules.route){
+                AruCoRulesScreen(navigator = ChildrenScreenNavigator(navController))
             }
         }
     }

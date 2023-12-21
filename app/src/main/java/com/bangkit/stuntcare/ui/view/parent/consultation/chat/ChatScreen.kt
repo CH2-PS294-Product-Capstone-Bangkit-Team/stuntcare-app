@@ -62,7 +62,9 @@ fun ChatContent(
             }
         )
 
-        ChatContent()
+        ChatContent(
+            navigateToRoomChat = {navigator.navigateToRoomChatScreen()}
+        )
 
         // TODO: Tambahkan Card Chat
 //        LazyColumn {
@@ -74,11 +76,15 @@ fun ChatContent(
 
 @Composable
 fun ChatContent(
+    navigateToRoomChat: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clickable {
+                navigateToRoomChat()
+            }
             .height(100.dp)
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {

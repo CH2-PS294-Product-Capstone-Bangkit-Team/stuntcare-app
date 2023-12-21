@@ -22,4 +22,7 @@
     <string name="slider_4">Konsultasi Langsung untuk Pertumbuhan yang Sehat</string>
     <string name="description_4">Dapatkan pandangan ahli langsung dari ahli gizi dan dokter anak tanpa meninggalkan rumah. Fitur konsultasi kami memberikan kemudahan akses untuk menjawab setiap pertanyaan Anda seputar kesehatan dan pertumbuhan anak.</string>
     <string name="hight_guide">Pastikan foto anak memiliki kecerahan yang baik dan latar yang bersih. Tutorial pengambilan foto dapat dilihat dengan mengklik halaman tutorial ini</string>
+    <string name="step_1">1. Download dokumen <b>AruCo Marker</b> (Gambar Barcode) dengan ukuran kertas A4. FIle dapat diunduh disini dalam format PDF </string>
+    <string name="step_2">2. Untuk bayi yang belum bisa berdiri/berjalan, baringkan dengan kondisi telentang (menghadap kamera) secara lurus, dan letakkan kertas AruCo Marker di dekat posisi anak. Contoh di gambar bawah ini :</string>
+    <string name="step_3">3. Untuk anak bisa berdiri/berjalan, foto dengan kondisi tegak (menghadap kamera) , dan memegang kertas AruCo Marker di dekat posisi anak. Contoh di gambar bawah ini :</string>
 </resources>

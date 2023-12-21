@@ -54,14 +54,16 @@ sealed class Screen (val route: String){
 
     // Consultation Route
     object DetailDoctor: Screen("consultation/{doctorId}"){
-        fun createRoute(doctorId: Int) = "consultation/$doctorId"
+        fun createRoute(doctorId: String) = "consultation/$doctorId"
     }
 
     object SetSchedule: Screen("consultation/{doctorId}/setSchedule"){
-        fun createRoute(doctorId: Int) = "consultation/$doctorId/setSchedule"
+        fun createRoute(doctorId: String) = "consultation/$doctorId/setSchedule"
     }
 
     object Chat: Screen("consultation/chat")
+
+    object RoomChat: Screen("consultation/chat/chatId")
 
 
     // Community Route
@@ -84,4 +86,6 @@ sealed class Screen (val route: String){
     object HeightMeasurement: Screen("height_measurement")
 
     object WelcomePage: Screen("welcome_page")
+
+    object AruCoRules: Screen("aruco")
 }

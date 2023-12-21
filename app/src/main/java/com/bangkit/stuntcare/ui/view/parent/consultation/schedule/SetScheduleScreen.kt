@@ -62,7 +62,7 @@ import kotlin.math.exp
 
 @Composable
 fun SetScheduleScreen(
-    doctorId: Int,
+    doctorId: String,
     navigator: ConsultationScreenNavigator,
     viewModel: SetScheduleViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)

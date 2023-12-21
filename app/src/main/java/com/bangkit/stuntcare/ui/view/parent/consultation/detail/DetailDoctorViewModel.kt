@@ -6,17 +6,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bangkit.stuntcare.data.DataRepository
+import com.bangkit.stuntcare.data.remote.response.DetailDoctorResponse
+import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.model.Doctor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class DetailDoctorViewModel(val repository: DataRepository): ViewModel() {
-    private val _doctor: MutableState<Doctor?> = mutableStateOf(null)
-    val doctor: State<Doctor?>
+    private val _doctor: MutableStateFlow<UiState<DetailDoctorResponse>> = MutableStateFlow(UiState.Loading)
+    val doctor: StateFlow<UiState<DetailDoctorResponse>>
         get() = _doctor
 
-    fun getDoctorById(doctorId: Int){
+    fun getDoctorById(doctorId: String){
         viewModelScope.launch {
-            _doctor.value = repository.getDoctorById(doctorId)
+            repository.getDoctorById(doctorId)
+                .catch {
+                    _doctor.value = UiState.Error(it.message.toString())
+                }
+                .collect {
+                    _doctor.value = UiState.Success(it)
+                }
         }
     }
 }

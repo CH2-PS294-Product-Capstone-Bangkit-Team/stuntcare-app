@@ -46,8 +46,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -144,10 +146,9 @@ fun HighMeasurementScreen(
                 color = Color.Red
             )
         ) {
-            append("halaman tutorial ini")
+            append(" halaman tutorial ini")
         }
     }
-    val uriHandler = LocalUriHandler.current
 
     Column {
         TopAppBar(
@@ -165,12 +166,19 @@ fun HighMeasurementScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(vertical = 12.dp, horizontal = 16.dp)
         ) {
-            ClickableText(text = text, onClick = {
-                text.getStringAnnotations(tag = "toGuide", start = it, end = it).firstOrNull()
-                    .let {
-                        uriHandler.openUri("") // TODO
-                    }
-            })
+            ClickableText(
+                text = text,
+                onClick = {
+                    text.getStringAnnotations(tag = "toGuide", start = it, end = it).firstOrNull()
+                        .let {
+                            childrenScreenNavigator.navigateToAruCoRules()
+                        }
+                },
+                style = TextStyle(
+                    textAlign = TextAlign.Center
+                ),
+                modifier = modifier.padding(12.dp)
+            )
 
             AsyncImage(
                 model = if (currentImageUri != null) currentImageUri else "",
@@ -255,6 +263,7 @@ fun HighMeasurementScreen(
 
             LaunchedEffect(key1 = currentImageUri) {
                 currentImageUri?.let {
+                    isLoading = true
                     val imageFile = uriToFile(it, context).reduceFileImage()
                     val requestImageFile =
                         imageFile.asRequestBody("image/jpeg".toMediaType())
@@ -268,23 +277,29 @@ fun HighMeasurementScreen(
                     scope.launch {
                         try {
                             val response = viewModel.getHeightMeasurementPrediction(multipartBody)
-                            if (response.status == "success"){
+                            if (response.status == "success") {
                                 heightMeasurementPrediction = response.data.tinggiBadan
-                            }else{
-                                showToast("Mohon Pastikan Gambar Yang Anda Masukkan Sudah Sesuai", context)
+                            } else {
+                                showToast(
+                                    "Mohon Pastikan Gambar Yang Anda Masukkan Sudah Sesuai",
+                                    context
+                                )
                             }
-                        }catch (e: HttpException){
+                        } catch (e: HttpException) {
                             val jsonInString = e.response()?.errorBody()?.string()
-                            val errorBody = Gson().fromJson(jsonInString, HighMeasurementPrediction::class.java)
+                            val errorBody =
+                                Gson().fromJson(jsonInString, HighMeasurementPrediction::class.java)
                             val errorMessage = errorBody.message
                             showToast(errorMessage, context)
                             Log.d("Update Children", "Response: $e")
+                        } finally {
+                            isLoading = false
                         }
                     }
                 }
             }
         }
+        ShowLoading(state = isLoading, modifier.fillMaxSize())
     }
-    ShowLoading(state = isLoading, modifier.fillMaxSize())
 }
 

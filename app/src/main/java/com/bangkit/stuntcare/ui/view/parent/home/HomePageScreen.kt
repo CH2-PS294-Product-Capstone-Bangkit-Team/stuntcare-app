@@ -128,7 +128,7 @@ fun HomePageContent(
             data = data,
             viewModel = viewModel
         )
-        MenuItemSection(navigateToMenu = { })
+        MenuItemSection(navigator = homePageScreenNavigator)
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -263,7 +263,7 @@ fun ChildListSection(
                     statusStunting = response.stunting.message
                 }
 
-                CardChild(children = child, status = statusStunting, modifier = modifier.clickable { homePageScreenNavigator.navigateToChildPage() })
+                CardChild(children = child, status = statusStunting, modifier = modifier.clickable {  })
             }
 
             Box(
@@ -308,7 +308,7 @@ fun ChildListSection(
 
 @Composable
 fun MenuItemSection(
-    navigateToMenu: (Int) -> Unit,
+    navigator: HomePageScreenNavigator,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -323,7 +323,7 @@ fun MenuItemSection(
             dummyMenu.forEach { menu ->
                 MenuItem(
                     menu = menu,
-                    modifier = modifier.clickable { navigateToMenu(menu.imageMenu) }
+                    modifier = modifier.clickable { navigator.navigateToMenu(menu.id) }
                 )
             }
         }

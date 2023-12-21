@@ -35,7 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.data.di.Injection
+import com.bangkit.stuntcare.data.remote.response.DoctorResponse
 import com.bangkit.stuntcare.ui.common.UiState
+import com.bangkit.stuntcare.ui.component.DoctorCard
 import com.bangkit.stuntcare.ui.component.SearchBar
 import com.bangkit.stuntcare.ui.model.Doctor
 import com.bangkit.stuntcare.ui.model.dummyDoctor
@@ -74,7 +76,7 @@ fun ConsultationContent(
     navigator: ConsultationScreenNavigator,
     onQueryChange: (String) -> Unit,
     query: String,
-    doctor: List<Doctor>,
+    doctor: DoctorResponse,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -100,75 +102,75 @@ fun ConsultationContent(
             }
         }
 
-        items(doctor, { it.id }) {
+        items(doctor.data.doctor, { it.id }) {
             DoctorCard(doctor = it, navigator = navigator, modifier = modifier.clickable { navigator.navigateToDetailDoctor(it.id) })
         }
     }
 }
 
-@Composable
-fun DoctorCard(
-    doctor: Doctor,
-    navigator: ConsultationScreenNavigator,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Row(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            AsyncImage(
-                model = doctor.image,
-                contentDescription = null,
-                modifier = modifier.size(width = 65.dp, height = 77.dp)
-            )
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(horizontal = 8.dp)
-            ) {
-                Text(text = doctor.name, fontWeight = FontWeight.Medium, fontSize = 14.sp)
-                Text(text = doctor.type, fontWeight = FontWeight.ExtraLight, fontSize = 10.sp)
-                Card(modifier = modifier.padding(top = 4.dp)) {
-                    Text(
-                        text = "${doctor.longExperience} Tahun",
-                        fontWeight = FontWeight.ExtraLight,
-                        fontSize = 8.sp
-                    )
-                }
-                Text(text = doctor.price, fontWeight = FontWeight.ExtraLight, fontSize = 8.sp)
-            }
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Bottom,
-                modifier = modifier.fillMaxSize()
-            ) {
-                Box(modifier = modifier) {
-
-                }
-                Button(
-                    onClick = { navigator.navigateToSetSchedule(doctor.id) },
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = modifier
-                        .size(height = 20.dp, width = 60.dp)
-                ) {
-                    Text(
-                        text = "Chat",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 10.sp,
-                        maxLines = 1,
-                        modifier = modifier.padding(0.dp)
-                    )
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun DoctorCard(
+//    doctor: Doctor,
+//    navigator: ConsultationScreenNavigator,
+//    modifier: Modifier = Modifier
+//) {
+//    Card(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .height(100.dp)
+//            .padding(horizontal = 8.dp, vertical = 4.dp)
+//    ) {
+//        Row(
+//            modifier = modifier
+//                .fillMaxSize()
+//                .padding(horizontal = 12.dp, vertical = 8.dp)
+//        ) {
+//            AsyncImage(
+//                model = doctor.image,
+//                contentDescription = null,
+//                modifier = modifier.size(width = 65.dp, height = 77.dp)
+//            )
+//            Column(
+//                horizontalAlignment = Alignment.Start,
+//                verticalArrangement = Arrangement.SpaceBetween,
+//                modifier = Modifier
+//                    .fillMaxHeight()
+//                    .padding(horizontal = 8.dp)
+//            ) {
+//                Text(text = doctor.name, fontWeight = FontWeight.Medium, fontSize = 14.sp)
+//                Text(text = doctor.type, fontWeight = FontWeight.ExtraLight, fontSize = 10.sp)
+//                Card(modifier = modifier.padding(top = 4.dp)) {
+//                    Text(
+//                        text = "${doctor.longExperience} Tahun",
+//                        fontWeight = FontWeight.ExtraLight,
+//                        fontSize = 8.sp
+//                    )
+//                }
+//                Text(text = doctor.price, fontWeight = FontWeight.ExtraLight, fontSize = 8.sp)
+//            }
+//            Column(
+//                horizontalAlignment = Alignment.End,
+//                verticalArrangement = Arrangement.Bottom,
+//                modifier = modifier.fillMaxSize()
+//            ) {
+//                Box(modifier = modifier) {
+//
+//                }
+//                Button(
+//                    onClick = { navigator.navigateToSetSchedule(doctor.id) },
+//                    contentPadding = PaddingValues(0.dp),
+//                    modifier = modifier
+//                        .size(height = 20.dp, width = 60.dp)
+//                ) {
+//                    Text(
+//                        text = "Chat",
+//                        fontWeight = FontWeight.Medium,
+//                        fontSize = 10.sp,
+//                        maxLines = 1,
+//                        modifier = modifier.padding(0.dp)
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}

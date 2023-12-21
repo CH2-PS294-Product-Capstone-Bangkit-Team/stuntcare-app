@@ -7,6 +7,8 @@ import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
+import com.bangkit.stuntcare.data.remote.response.DetailDoctorResponse
+import com.bangkit.stuntcare.data.remote.response.DoctorResponse
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
 import com.bangkit.stuntcare.data.remote.response.FoodRecommendationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
@@ -134,4 +136,12 @@ interface ApiService {
         @Path("childrenId") childrenId: String,
         @Path("userId") userId: String?
     ): ChildrenFoodResponse
+
+    @GET("doctor")
+    suspend fun getDoctor(): DoctorResponse
+
+    @GET("doctor/{doctorId}")
+    suspend fun getDoctorById(
+        @Path("doctorId") doctorId: String
+    ): DetailDoctorResponse
 }

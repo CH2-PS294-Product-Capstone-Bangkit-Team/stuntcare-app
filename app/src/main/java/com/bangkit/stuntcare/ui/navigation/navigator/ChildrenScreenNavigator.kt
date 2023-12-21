@@ -36,6 +36,9 @@ class ChildrenScreenNavigator (val navController: NavController){
         return navController.currentBackStackEntry?.savedStateHandle?.get<Float>("height")
     }
 
+    fun navigateToAruCoRules(){
+        return navController.navigate(Screen.AruCoRules.route)
+    }
     fun backNavigationWithHeight(height: Float?){
         navController.previousBackStackEntry
             ?.savedStateHandle
