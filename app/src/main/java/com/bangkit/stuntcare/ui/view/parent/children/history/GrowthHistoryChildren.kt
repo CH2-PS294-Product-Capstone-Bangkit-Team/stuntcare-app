@@ -32,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -58,6 +59,7 @@ import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.bangkit.stuntcare.ui.view.parent.children.main.ChildrenTestScreen
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 
@@ -166,6 +168,9 @@ fun GrowthTopBarSection(
         mutableStateOf(true)
     }
 
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -241,18 +246,38 @@ fun GrowthTopBarSection(
                 LazyColumn {
                     items(data.child, { it.id }) { child ->
                         val gender = if (child.gender == "Laki-laki") "Boy" else "Girl"
-                        val statusChildren = runBlocking {
-                            viewModel.getStatusChildren(dateToDay(child.birthDay), gender, 23f, 60f)
+                        viewModel.statusChildren.collectAsState().value.let {
+                            when (it) {
+                                is UiState.Loading -> {
+                                    scope.launch {
+                                        viewModel.getStatusChildren(
+                                            dateToDay(child.birthDay),
+                                            gender,
+                                            23f,
+                                            60f
+                                        )
+                                    }
+                                }
+
+                                is UiState.Success -> {
+                                    val statusChildren = it.data
+                                    CardChild(
+                                        children = child,
+                                        status = statusChildren.stunting.message,
+                                        modifier = modifier.clickable {
+                                            viewModel.getChildrenById(child.id)
+                                            showListChildren = false
+                                        }
+                                    )
+                                }
+
+                                is UiState.Error -> {
+
+                                }
+                            }
                         }
 
-                        CardChild(
-                            children = child,
-                            status = statusChildren.stunting.message,
-                            modifier = modifier.clickable {
-                                viewModel.getChildrenById(child.id)
-                                showListChildren = false
-                            }
-                        )
+
                     }
                 }
             }

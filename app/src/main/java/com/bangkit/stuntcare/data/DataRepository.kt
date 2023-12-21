@@ -109,8 +109,8 @@ class DataRepository(
         gender: String,
         weight: Float,
         height: Float
-    ): ChildrenStatusResponse {
-        return apiServiceGetStunting.getStatusChildren(age, gender, weight, height)
+    ): Flow<ChildrenStatusResponse> {
+        return flowOf(apiServiceGetStunting.getStatusChildren(age, gender, weight, height))
     }
 
     suspend fun addChildren(
@@ -179,12 +179,12 @@ class DataRepository(
         userPreference.logout()
     }
 
-    suspend fun getFoodClassification(image: MultipartBody.Part): FoodClassificationResponse{
-        return apiServiceFoodClassification.getFoodClassification(image)
+    suspend fun getFoodClassification(image: MultipartBody.Part): Flow<FoodClassificationResponse>{
+        return flowOf(apiServiceFoodClassification.getFoodClassification(image))
     }
 
-    suspend fun getHeightMeasurementPrediction(image: MultipartBody.Part): HighMeasurementPrediction{
-        return apiServiceHighMeasurement.getHighMeasurement(image)
+    suspend fun getHeightMeasurementPrediction(image: MultipartBody.Part): Flow<HighMeasurementPrediction>{
+        return flowOf(apiServiceHighMeasurement.getHighMeasurement(image))
     }
 
     // Chat Feature

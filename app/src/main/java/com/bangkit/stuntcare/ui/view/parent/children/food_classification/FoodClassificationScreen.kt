@@ -47,12 +47,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
+import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ImageDialogPicker
+import com.bangkit.stuntcare.ui.component.ShowLoading
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
 import com.bangkit.stuntcare.ui.utils.checkPermission
 import com.bangkit.stuntcare.ui.utils.getImageUri
 import com.bangkit.stuntcare.ui.utils.reduceFileImage
+import com.bangkit.stuntcare.ui.utils.removeTrailingZeros
 import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.utils.uriToFile
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
@@ -254,9 +257,10 @@ fun FoodClassificationContent(
                 )
             }
 
+            ShowLoading(state = isLoading)
+
             LaunchedEffect(key1 = currentImageUri) {
                 currentImageUri?.let {
-                    isLoading = true
                     val imageFile = uriToFile(it, context).reduceFileImage()
                     val requestImageFile =
                         imageFile.asRequestBody("image/jpeg".toMediaType())
@@ -266,35 +270,46 @@ fun FoodClassificationContent(
                         imageFile.name,
                         requestImageFile
                     )
-
                     scope.launch {
-                        try {
-                            val response = runBlocking {
-                                viewModel.getFoodClassification(multipartBody)
+                        viewModel.getFoodClassification.value.let {
+                            when (it) {
+                                is UiState.Loading -> {
+                                    viewModel.getFoodClassification(multipartBody)
+                                    isLoading = true
+                                }
+
+                                is UiState.Success -> {
+                                    try {
+                                        val response = it.data
+                                        if (response.data != null) {
+                                            showToast(response.data.category, context)
+                                        } else {
+                                            showToast(response.status.message, context)
+                                        }
+                                    } catch (e: HttpException) {
+                                        val jsonInString = e.response()?.errorBody()?.string()
+                                        val errorBody = Gson().fromJson(
+                                            jsonInString,
+                                            FoodClassificationResponse::class.java
+                                        )
+                                        val errorMessage = errorBody.status.message
+                                        showToast(errorMessage, context)
+
+                                    } finally {
+                                        isLoading = false
+                                    }
+                                }
+
+                                is UiState.Error -> {
+                                    showToast("Silahkan Masukkan Gambar Yang Valid", context)
+                                    isLoading = false
+                                }
                             }
-                            if (response.data != null){
-                                showToast(response.data.category, context)
-                            }else{
-                                showToast(response.status.message, context)
-                            }
-                            isLoading = false
-                        }catch (e: HttpException){
-                            val jsonInString = e.response()?.errorBody()?.string()
-                            val errorBody = Gson().fromJson(jsonInString, FoodClassificationResponse::class.java)
-                            val errorMessage = errorBody.status.message
-                            showToast(errorMessage, context)
                         }
                     }
 
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ShowLoading(isLoading: Boolean) {
-    if (isLoading) {
-        CircularProgressIndicator()
     }
 }

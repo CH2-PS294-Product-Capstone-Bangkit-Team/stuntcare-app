@@ -5,16 +5,16 @@ import com.google.gson.annotations.SerializedName
 data class HighMeasurementPrediction(
 
 	@field:SerializedName("data")
-	val data: DataHighMeasurement,
-
-	@field:SerializedName("success")
-	val success: Boolean,
+	val data: HighMeasurementData,
 
 	@field:SerializedName("message")
-	val message: String
+	val message: String,
+
+	@field:SerializedName("status")
+	val status: String
 )
 
-data class DataHighMeasurement(
+data class HighMeasurementData(
 
 	@field:SerializedName("listHeight")
 	val listHeight: List<Any>,

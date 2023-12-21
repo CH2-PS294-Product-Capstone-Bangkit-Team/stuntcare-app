@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,29 +48,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.data.remote.response.ChildItem
-import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
-import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
-import com.bangkit.stuntcare.data.remote.response.UserResponse
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ArticleItem
 import com.bangkit.stuntcare.ui.component.CardChild
 import com.bangkit.stuntcare.ui.component.MenuItem
-import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.model.dummyArticle
 import com.bangkit.stuntcare.ui.model.dummyMenu
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
 import com.bangkit.stuntcare.ui.theme.Blue100
-import com.bangkit.stuntcare.ui.theme.Blue50
 import com.bangkit.stuntcare.ui.theme.Blue500
 import com.bangkit.stuntcare.ui.theme.Grey100
 import com.bangkit.stuntcare.ui.utils.dateToDay
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
-import com.patrykandpatrick.vico.core.extension.setFieldValue
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 @Composable
 fun HomePageScreen(
@@ -81,10 +71,6 @@ fun HomePageScreen(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
-    val scope = rememberCoroutineScope()
-    LazyColumn(){
-
-    }
     viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
         when (it) {
             is UiState.Loading -> {
@@ -93,7 +79,6 @@ fun HomePageScreen(
 
             is UiState.Success -> {
                 val data = it.data
-                val userData = viewModel.userData.value
 
                 HomePageContent(
                     homePageScreenNavigator = homePageScreenNavigator,
@@ -107,6 +92,7 @@ fun HomePageScreen(
             is UiState.Error -> {}
         }
     }
+
 }
 
 
@@ -227,6 +213,8 @@ fun ChildListSection(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .padding(horizontal = 24.dp)
@@ -257,11 +245,26 @@ fun ChildListSection(
         ) {
             data.forEach { child ->
                 val gender = if (child.gender == "Laki-laki") "Boy" else "Girl"
-                val statusChildren = runBlocking {
-                    viewModel.getStatusChildren(dateToDay(child.birthDay), gender, 23f, 60f)
+
+                viewModel.statusChildren.collectAsState(initial = UiState.Loading).value.let {
+                    when(it){
+                        is UiState.Loading -> {
+                            scope.launch {
+                                viewModel.getStatusChildren(dateToDay(child.birthDay), gender, 23f, 60f)
+                            }
+                        }
+
+                        is UiState.Success -> {
+                            val statusChildren = it.data
+                            CardChild(children = child, status = statusChildren.stunting.message)
+                        }
+
+                        is UiState.Error -> {
+
+                        }
+                    }
                 }
 
-                CardChild(children = child, status = statusChildren.stunting.message)
             }
 
             Box(

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 class ApiConfig {
     companion object {
-        fun getApiService(token: String, baseUrl: String): ApiService {
+        fun getApiService(baseUrl: String): ApiService {
 
             val loggingInterceptor =
                 if (BuildConfig.DEBUG) {

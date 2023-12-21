@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,7 +55,9 @@ import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
+import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ImageDialogPicker
+import com.bangkit.stuntcare.ui.component.ShowLoading
 import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.utils.checkPermission
 import com.bangkit.stuntcare.ui.utils.getImageUri
@@ -209,8 +213,7 @@ fun HighMeasurementScreen(
 
             Button(
                 onClick = {
-
-                    if(heightMeasurementPrediction != null){
+                    if (heightMeasurementPrediction != null) {
                         childrenScreenNavigator.backNavigationWithHeight(heightMeasurementPrediction)
                     } else {
                         showToast("Belum ada data yang ditampilkan", context)
@@ -246,9 +249,9 @@ fun HighMeasurementScreen(
                 )
             }
 
+
             LaunchedEffect(key1 = currentImageUri) {
                 currentImageUri?.let {
-                    isLoading = true
                     val imageFile = uriToFile(it, context).reduceFileImage()
                     val requestImageFile =
                         imageFile.asRequestBody("image/jpeg".toMediaType())
@@ -258,37 +261,44 @@ fun HighMeasurementScreen(
                         imageFile.name,
                         requestImageFile
                     )
-
-                    scope.launch {
-                        try {
-                            val response = runBlocking {
+                    viewModel.getHeight.value.let {
+                        when (it) {
+                            is UiState.Loading -> {
                                 viewModel.getHeightMeasurementPrediction(multipartBody)
-                            }
-                            if (!response.success) {
-                                showToast(response.message, context)
-                            } else {
-                                showToast("Data Belum Berhasil Ditambahkan", context)
-                            }
-                            heightMeasurementPrediction = removeTrailingZeros(response.data.tinggiBadan).toFloat()
-                            isLoading = false
-                        } catch (e: HttpException) {
-                            try {
-                                val jsonInString = e.response()?.errorBody()?.string()
-                                val errorBody = Gson().fromJson(
-                                    jsonInString,
-                                    HighMeasurementPrediction::class.java
-                                )
-                                val errorMessage = errorBody.message
-                                showToast(errorMessage, context)
-                            } catch (e: IllegalStateException){
-                                showToast("Silahkan periksa kembali data anda", context)
+                                isLoading = true
                             }
 
+                            is UiState.Success -> {
+                                try {
+                                    val response = it.data
+                                    if (response.status == "success") {
+                                        showToast(response.message, context)
+                                    } else {
+                                        showToast("Data Belum Berhasil Ditambahkan", context)
+                                    }
+                                    heightMeasurementPrediction = response.data.tinggiBadan
+                                    isLoading = false
+                                } catch (e: HttpException) {
+                                    isLoading = false
+                                    val jsonInString = e.response()?.errorBody()?.string()
+                                    val errorBody = Gson().fromJson(
+                                        jsonInString,
+                                        HighMeasurementPrediction::class.java
+                                    )
+                                    val errorMessage = errorBody.message
+                                    showToast(errorMessage, context)
+                                }
+                            }
+
+                            is UiState.Error -> {
+                                showToast("Silahkan Masukkan Gambar Yang Valid", context)
+                            }
                         }
                     }
-
                 }
             }
         }
     }
+    ShowLoading(state = isLoading, modifier.fillMaxSize())
 }
+

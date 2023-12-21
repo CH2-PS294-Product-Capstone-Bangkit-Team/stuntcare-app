@@ -99,45 +99,66 @@ fun ChildrenScreen(
     childrenId: String? = null,
     navigator: ChildrenScreenNavigator
 ) {
+
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = context){
+        viewModel.getAllChildren()
+    }
+
     viewModel.allChild.collectAsState(UiState.Loading).value.let { childItem ->
         when (childItem) {
             is UiState.Loading -> {
                 scope.launch {
-                    viewModel.getAllChildren()
                 }
             }
 
             is UiState.Success -> {
                 val listChild = childItem.data
 
+                LaunchedEffect(key1 = childrenId ?: listChild.first().id){
+                    viewModel.getChildrenById(childrenId ?: listChild.first().id)
+                }
                 viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
                     when (it) {
                         is UiState.Loading -> {
-                                viewModel.getChildrenById(childrenId ?: listChild.first().id)
                         }
 
                         is UiState.Success -> {
                             val child = it.data
                             val gender = if (child.data.gender == "Laki-laki") "Boy" else "Girl"
 
+                            viewModel.statusChildren.collectAsState().value.let {
+                                when (it) {
+                                    is UiState.Loading -> {
+                                        scope.launch {
+                                            viewModel.getStatusChildren(
+                                                dateToDay(child.data.birthDay),
+                                                gender,
+                                                23f,
+                                                60f
+                                            )
+                                        }
+                                    }
 
-                            val statusChildren = runBlocking {
-                                viewModel.getStatusChildren(
-                                    dateToDay(child.data.birthDay),
-                                    gender,
-                                    23f,
-                                    60f
-                                )
+                                    is UiState.Success -> {
+                                        val statusChildren = it.data
+                                        ChildrenTestScreen(
+                                            navigator = navigator,
+                                            allChildren = listChild,
+                                            children = child,
+                                            statusChildren = statusChildren,
+                                            viewModel = viewModel
+                                        )
+                                    }
+
+                                    is UiState.Error -> {
+
+                                    }
+                                }
                             }
-                            ChildrenTestScreen(
-                                navigator = navigator,
-                                allChildren = listChild,
-                                children = child,
-                                statusChildren = statusChildren,
-                                viewModel = viewModel
-                            )
                         }
 
                         is UiState.Error -> {
@@ -210,6 +231,8 @@ fun ChildrenTestScreen(
         mutableStateOf(true)
     }
 
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
     ) {
@@ -245,18 +268,37 @@ fun ChildrenTestScreen(
                 LazyColumn {
                     items(allChildren, { it.id }) { child ->
                         val gender = if (child.gender == "Laki-laki") "Boy" else "Girl"
-                        val statusChildren = runBlocking {
-                            viewModel.getStatusChildren(dateToDay(child.birthDay), gender, 23f, 60f)
-                        }
 
-                        CardChild(
-                            children = child,
-                            status = statusChildren.stunting.message,
-                            modifier = modifier.clickable {
-                                viewModel.getChildrenById(child.id)
-                                showListChildren = false
+                        viewModel.statusChildren.collectAsState().value.let {
+                            when (it) {
+                                is UiState.Loading -> {
+                                    scope.launch {
+                                        viewModel.getStatusChildren(
+                                            dateToDay(child.birthDay),
+                                            gender,
+                                            23f,
+                                            60f
+                                        )
+                                    }
+                                }
+
+                                is UiState.Success -> {
+                                    val statusChildren = it.data
+                                    CardChild(
+                                        children = child,
+                                        status = statusChildren.stunting.message,
+                                        modifier = modifier.clickable {
+                                            viewModel.getChildrenById(child.id)
+                                            showListChildren = false
+                                        }
+                                    )
+                                }
+
+                                is UiState.Error -> {
+
+                                }
                             }
-                        )
+                        }
                     }
                 }
             }
@@ -415,12 +457,12 @@ fun ChildrenDataSection(
         ) {
             ChildrenBoxInfo(
                 title = "Tinggi Badan",
-                data = removeTrailingZeros(children.data.growthHistory.first().height).toString(),
+                data = removeTrailingZeros(children.data.growthHistory.first().height),
                 unit = "cm"
             )
             ChildrenBoxInfo(
                 title = "Berat Badan",
-                data = removeTrailingZeros(children.data.growthHistory.first().weight).toString(),
+                data = removeTrailingZeros(children.data.growthHistory.first().weight),
                 unit = "kg"
             )
             ChildrenBoxInfo(

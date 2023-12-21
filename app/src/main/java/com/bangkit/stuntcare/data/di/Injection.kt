@@ -15,12 +15,11 @@ object Injection {
         val baseUrlFoodClassification = "https://food-classification-nts3atbn5q-de.a.run.app/"
         val baseUrlHighMeasurement = "https://height-prediction-nts3atbn5q-de.a.run.app/"
         val pref = UserPreference.getInstance(context.dataStore)
-        val user = runBlocking { pref.getSession().first() }
-        val apiServiceFromCc = ApiConfig.getApiService(user.token, baseUrlFromCc)
-        val apiServiceGetStatus = ApiConfig.getApiService(user.token, baseUrlGetStatus)
+        val apiServiceFromCc = ApiConfig.getApiService( baseUrlFromCc)
+        val apiServiceGetStatus = ApiConfig.getApiService( baseUrlGetStatus)
         val apiServiceFoodClassification =
-            ApiConfig.getApiService(user.token, baseUrlFoodClassification)
-        val apiServiceHighMeasurement = ApiConfig.getApiService(user.token, baseUrlHighMeasurement)
+            ApiConfig.getApiService( baseUrlFoodClassification)
+        val apiServiceHighMeasurement = ApiConfig.getApiService( baseUrlHighMeasurement)
 
         return DataRepository.getInstance(
             userPreference = pref,

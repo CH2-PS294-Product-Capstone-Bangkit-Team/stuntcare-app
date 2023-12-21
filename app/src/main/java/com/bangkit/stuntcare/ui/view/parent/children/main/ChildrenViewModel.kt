@@ -35,6 +35,11 @@ class ChildrenViewModel(val repository: DataRepository) : ViewModel() {
     val allChild: MutableStateFlow<UiState<List<ChildItem>>>
         get() = _allChild
 
+    private val _statusChildren: MutableStateFlow<UiState<ChildrenStatusResponse>> =
+        MutableStateFlow(UiState.Loading)
+    val statusChildren: MutableStateFlow<UiState<ChildrenStatusResponse>>
+        get() = _statusChildren
+
     init {
         getAllChildren()
     }
@@ -68,8 +73,16 @@ class ChildrenViewModel(val repository: DataRepository) : ViewModel() {
         gender: String,
         weight: Float,
         height: Float
-    ): ChildrenStatusResponse {
-        return repository.statusChildren(age, gender, weight, height)
+    ) {
+        viewModelScope.launch {
+            repository.statusChildren(age, gender, weight, height)
+                .catch {
+                    _statusChildren.value = UiState.Error(it.message.toString())
+                }
+                .collect {
+                    _statusChildren.value = UiState.Success(it)
+                }
+        }
     }
 
 }
