@@ -56,6 +56,11 @@ import com.bangkit.stuntcare.ui.utils.reduceFileImage
 import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.utils.uriToFile
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -81,6 +86,7 @@ fun FoodClassificationContent(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var currentImageUri: Uri? by remember {
         mutableStateOf(null)
     }
@@ -216,37 +222,7 @@ fun FoodClassificationContent(
 
             Button(
                 onClick = {
-                    currentImageUri?.let {
-                        val imageFile = uriToFile(it, context).reduceFileImage()
-                        val requestImageFile =
-                            imageFile.asRequestBody("image/jpeg".toMediaType())
 
-                        val multipartBody = MultipartBody.Part.createFormData(
-                            "file",
-                            imageFile.name,
-                            requestImageFile
-                        )
-                        viewModel.uiState.value.let { uiState ->
-                            when (uiState) {
-                                is UiState.Loading -> {
-                                    isLoading = true
-                                    viewModel.getFoodClassification(multipartBody)
-                                }
-
-                                is UiState.Success -> {
-                                    isLoading = false
-                                    val data = uiState.data
-                                    showToast(data.message, context)
-                                }
-
-                                is UiState.Error -> {
-                                    isLoading = false
-                                    showToast(uiState.errorMessage, context)
-                                }
-                            }
-                        }
-
-                    }
                 },
                 shape = RoundedCornerShape(12.dp),
                 modifier = modifier.padding(vertical = 12.dp)
@@ -278,9 +254,39 @@ fun FoodClassificationContent(
                 )
             }
 
-            ShowLoading(isLoading = isLoading)
             LaunchedEffect(key1 = currentImageUri) {
+                currentImageUri?.let {
+                    isLoading = true
+                    val imageFile = uriToFile(it, context).reduceFileImage()
+                    val requestImageFile =
+                        imageFile.asRequestBody("image/jpeg".toMediaType())
 
+                    val multipartBody = MultipartBody.Part.createFormData(
+                        "image",
+                        imageFile.name,
+                        requestImageFile
+                    )
+
+                    scope.launch {
+                        try {
+                            val response = runBlocking {
+                                viewModel.getFoodClassification(multipartBody)
+                            }
+                            if (response.data != null){
+                                showToast(response.data.category, context)
+                            }else{
+                                showToast(response.status.message, context)
+                            }
+                            isLoading = false
+                        }catch (e: HttpException){
+                            val jsonInString = e.response()?.errorBody()?.string()
+                            val errorBody = Gson().fromJson(jsonInString, FoodClassificationResponse::class.java)
+                            val errorMessage = errorBody.status.message
+                            showToast(errorMessage, context)
+                        }
+                    }
+
+                }
             }
         }
     }

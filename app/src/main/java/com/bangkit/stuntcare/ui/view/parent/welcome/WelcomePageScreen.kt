@@ -93,17 +93,25 @@ fun WelcomePageScreen(
             stringResource(R.string.description_4)
         )
     )
-    Column {
+    ConstraintLayout {
+        val (imgPager, dotPager, btnLogin, btnRegister) = createRefs()
         HorizontalPager(
             count = listImageSlider.size,
             state = pagerState,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(imgPager) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
         ) { index ->
             Column {
                 Image(
                     painter = painterResource(id = listImageSlider[index].image),
                     contentDescription = "this is image from server",
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(240.dp)
@@ -115,14 +123,18 @@ fun WelcomePageScreen(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    modifier = modifier.fillMaxWidth().height(60.dp).padding(12.dp)
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 )
                 Text(
                     text = listImageSlider[index].description,
                     fontWeight = FontWeight.Normal,
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center,
-                    modifier = modifier.fillMaxWidth().padding(12.dp).height(120.dp)
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
                 )
             }
         }
@@ -130,7 +142,11 @@ fun WelcomePageScreen(
             Modifier
                 .height(10.dp)
                 .fillMaxWidth()
-                .align(Alignment.CenterHorizontally),
+                .constrainAs(dotPager) {
+                    start.linkTo(parent.start)
+                    top.linkTo(imgPager.bottom, margin = 12.dp)
+                    end.linkTo(parent.end)
+                },
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(listImageSlider.size) { iteration ->
@@ -151,11 +167,16 @@ fun WelcomePageScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
+                .constrainAs(btnLogin){
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                }
         ) {
             Button(onClick = { navigateToLoginScreen() }) {
                 Text("Masuk")
             }
-            Button(onClick = { navigateToLoginScreen() }) {
+            Button(onClick = { navigateToRegisterScreen() }) {
                 Text("Daftar")
             }
         }

@@ -179,8 +179,8 @@ class DataRepository(
         userPreference.logout()
     }
 
-    suspend fun getFoodClassification(image: MultipartBody.Part): Flow<HighMeasurementPrediction>{
-        return flowOf(apiServiceHighMeasurement.getHighMeasurement(image))
+    suspend fun getFoodClassification(image: MultipartBody.Part): FoodClassificationResponse{
+        return apiServiceFoodClassification.getFoodClassification(image)
     }
 
     // Chat Feature
