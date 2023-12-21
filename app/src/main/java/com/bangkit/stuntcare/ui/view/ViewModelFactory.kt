@@ -8,6 +8,7 @@ import com.bangkit.stuntcare.data.DataRepository
 import com.bangkit.stuntcare.data.di.Injection
 import com.bangkit.stuntcare.ui.view.parent.children.add.AddChildrenViewModel
 import com.bangkit.stuntcare.ui.view.parent.children.food_classification.FoodClassificationViewModel
+import com.bangkit.stuntcare.ui.view.parent.children.high_measurement.HighMeasurementPredictionViewModel
 import com.bangkit.stuntcare.ui.view.parent.children.history.GrowthHistoryChildrenViewModel
 import com.bangkit.stuntcare.ui.view.parent.children.main.ChildrenViewModel
 import com.bangkit.stuntcare.ui.view.parent.children.profile.ChildrenProfileViewModel
@@ -77,6 +78,9 @@ class ViewModelFactory(private val repository: DataRepository) :
                 FoodClassificationViewModel(repository) as T
             }
 
+            modelClass.isAssignableFrom(HighMeasurementPredictionViewModel::class.java) -> {
+                HighMeasurementPredictionViewModel(repository) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

@@ -76,6 +76,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("io.coil-kt:coil-compose:2.2.0")
 
+    implementation ("androidx.compose.runtime:runtime-livedata:1.3.3")
+
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")

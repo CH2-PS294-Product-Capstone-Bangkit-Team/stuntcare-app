@@ -85,8 +85,8 @@ interface ApiService {
     suspend fun updateGrowthChildren(
         @Path("id") userId: String?,
         @Path("childrenId") childrenId: String,
+        @Part("weight") weight: Float,
         @Part("height") height: Float,
-        @Part("weight") weight: Float
     ): ApiResponse2
 
     // STUNTIN STATUS

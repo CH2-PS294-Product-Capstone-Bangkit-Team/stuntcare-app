@@ -96,12 +96,12 @@ class DataRepository(
 
     suspend fun updateChildren(id: String, name: RequestBody, weight: RequestBody, height: RequestBody): ApiResponse2 {
         // TODO
-        return apiServiceFromCc.updateGrowthChildren(auth.currentUser?.uid, id, name, weight, height)
+        return apiServiceFromCc.updateGrowthChildren(userId = auth.currentUser?.uid, childrenId = id, name, weight = weight, height = height)
     }
 
     suspend fun updateChildren(id: String, weight: Float, height: Float): ApiResponse2 {
         // TODO
-        return apiServiceFromCc.updateGrowthChildren(auth.currentUser?.uid, id, weight, height)
+        return apiServiceFromCc.updateGrowthChildren(userId = auth.currentUser?.uid, childrenId = id, height = weight, weight =  height)
     }
 
     suspend fun statusChildren(
@@ -181,6 +181,10 @@ class DataRepository(
 
     suspend fun getFoodClassification(image: MultipartBody.Part): FoodClassificationResponse{
         return apiServiceFoodClassification.getFoodClassification(image)
+    }
+
+    suspend fun getHeightMeasurementPrediction(image: MultipartBody.Part): HighMeasurementPrediction{
+        return apiServiceHighMeasurement.getHighMeasurement(image)
     }
 
     // Chat Feature

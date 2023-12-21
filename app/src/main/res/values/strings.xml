@@ -21,16 +21,5 @@
     <string name="description_3">Kenali risiko stunting dengan informasi yang akurat. Aplikasi kami memberikan panduan praktis untuk mencegah stunting dan menjamin anak Anda tumbuh optimal. Bersama, kita bisa menciptakan masa depan sehat untuk si kecil!</string>
     <string name="slider_4">Konsultasi Langsung untuk Pertumbuhan yang Sehat</string>
     <string name="description_4">Dapatkan pandangan ahli langsung dari ahli gizi dan dokter anak tanpa meninggalkan rumah. Fitur konsultasi kami memberikan kemudahan akses untuk menjawab setiap pertanyaan Anda seputar kesehatan dan pertumbuhan anak.</string>
-    <string-array name="title">
-        <item>Pantau Pertumbuhan Si Kecil Secara Efektif</item>
-        <item>Nutrisi Optimal untuk Si Kecil</item>
-        <item>Tangkal Stunting, Ciptakan Masa Depan Sehat</item>
-        <item>Konsultasi Langsung untuk Pertumbuhan yang Sehat</item>
-    </string-array>
-    <string-array name="description">
-        <item> </item>
-        <item></item>
-        <item></item>
-        <item></item>
-    </string-array>
+    <string name="hight_guide">Pastikan foto anak memiliki kecerahan yang baik dan latar yang bersih. Tutorial pengambilan foto dapat dilihat dengan mengklik halaman tutorial ini</string>
 </resources>

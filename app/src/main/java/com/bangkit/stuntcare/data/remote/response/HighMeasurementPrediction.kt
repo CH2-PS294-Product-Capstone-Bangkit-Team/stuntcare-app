@@ -26,5 +26,5 @@ data class DataHighMeasurement(
 	val listWidth: List<Any>,
 
 	@field:SerializedName("tinggiBadan")
-	val tinggiBadan: Any
+	val tinggiBadan: Float
 )

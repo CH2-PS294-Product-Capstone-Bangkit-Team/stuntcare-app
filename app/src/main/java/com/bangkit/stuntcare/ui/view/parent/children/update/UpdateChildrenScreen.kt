@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -92,113 +94,147 @@ fun UpdateChildrenContent(
     }
 
     var height by remember {
-        mutableStateOf(children.data.growthHistory.first().weight.toString())
+        mutableStateOf(children.data.growthHistory.first().height.toString())
     }
 
     var updateState by remember {
         mutableStateOf(false)
     }
 
-    Column(verticalArrangement = Arrangement.Center) {
-        TopAppBar(
-            title = { Text(text = "Update") },
-            navigationIcon = {
-                IconButton(onClick = { navigator.backNavigation() }) { // TODO
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
-                }
-            }
-        )
+    val heightFromModel = navigator.getResult()
+    if (heightFromModel != null){
+        height = heightFromModel.toString()
+    }
 
-        Column(
-            modifier = modifier.padding(24.dp)
-        ) {
-            OutlinedTextField(
-                value = children.data.name,
-                label = { Text("Nama") },
-                onValueChange = { },
-                readOnly = true,
-                modifier = modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = dateToDay(children.data.birthDay).toString(),
-                label = { Text("Usia") },
-                onValueChange = {},
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = null
+    LazyColumn {
+        item {
+            Column(verticalArrangement = Arrangement.Center) {
+                TopAppBar(
+                    title = { Text(text = "Update") },
+                    navigationIcon = {
+                        IconButton(onClick = { navigator.backNavigation() }) { // TODO
+                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                        }
+                    }
+                )
+
+                Column(
+                    modifier = modifier.padding(24.dp)
+                ) {
+                    OutlinedTextField(
+                        value = children.data.name,
+                        label = { Text("Nama") },
+                        onValueChange = { },
+                        readOnly = true,
+                        modifier = modifier.fillMaxWidth()
                     )
-                },
-                readOnly = true,
-                modifier = modifier.fillMaxWidth()
-            )
+                    OutlinedTextField(
+                        value = dateToDay(children.data.birthDay).toString(),
+                        label = { Text("Usia") },
+                        onValueChange = {},
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = null
+                            )
+                        },
+                        readOnly = true,
+                        modifier = modifier.fillMaxWidth()
+                    )
 
-            OutlinedTextField(
-                value = weight,
-                label = { Text(text = "Berat Badan") },
-                onValueChange = { weight = it },
-                trailingIcon = {
-                    Text(text = "cm")
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = modifier.fillMaxWidth()
-            )
-            OutlinedTextField(
-                value = height,
-                label = { Text(text = "Tinggi Badan") },
-                onValueChange = { height = it },
-                trailingIcon = {
-                    Text(text = "kg")
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = modifier.fillMaxWidth()
-            )
-            Button(
-                onClick = {
-                          try {
-                              scope.launch {
-                                  val response = withContext(Dispatchers.IO){
-                                      viewModel.updateChildren(children.data.id, weight.toFloat(), height.toFloat())
-                                  }
+                    OutlinedTextField(
+                        value = weight,
+                        label = { Text(text = "Berat Badan") },
+                        onValueChange = { weight = it },
+                        trailingIcon = {
+                            Text(text = "kg")
+                        },
+                        isError = weight == "",
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = modifier.fillMaxWidth()
+                    )
+                    OutlinedTextField(
+                        value = height,
+                        label = { Text(text = "Tinggi Badan") },
+                        onValueChange = { height = it },
+                        trailingIcon = {
+                            Text(text = "cm")
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = modifier.fillMaxWidth()
+                    )
+                    Button(
+                        onClick = {
+                            try {
+                                scope.launch {
+                                    val response = withContext(Dispatchers.IO) {
+                                        viewModel.updateChildren(
+                                            id = children.data.id,
+                                            weight = weight.toFloat(),
+                                            height = height.toFloat()
+                                        )
+                                    }
 
-                                  if (response.status){
-                                      showToast("Data Anak Gagal di Update", context)
-                                  }else {
-                                      navigator.backNavigation()
-                                      showToast("Data Anak Berhasil di Update", context)
-                                  }
-                              }
-                          }catch (e: HttpException){
-                              val jsonInString = e.response()?.errorBody()?.string()
-                              val errorBody = Gson().fromJson(jsonInString, ApiResponse2::class.java)
-                              val errorMessage = errorBody.message
-                              showToast(errorMessage, context)
-                              Log.d("Update Children", "Response: $e")
-                          }
-                },
-                modifier = modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(8.dp)
-            ) {
-                Text(text = "UPDATE", fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                                    if (response.status) {
+                                        showToast("Data Anak Gagal di Update", context)
+                                    } else {
+                                        navigator.backNavigation()
+                                        showToast("Data Anak Berhasil di Update", context)
+                                    }
+                                }
+                            } catch (e: HttpException) {
+                                val jsonInString = e.response()?.errorBody()?.string()
+                                val errorBody = Gson().fromJson(jsonInString, ApiResponse2::class.java)
+                                val errorMessage = errorBody.message
+                                showToast(errorMessage, context)
+                                Log.d("Update Children", "Response: $e")
+                            }
+                        },
+                        modifier = modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(8.dp)
+                    ) {
+                        Text(text = "UPDATE", fontWeight = FontWeight.Medium, fontSize = 16.sp)
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                    ) {
+                        Text("Atau", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp)
+                        ) {
+                            Text(
+                                "Gunakan Fitur AI Kami (Beta Version)",
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp
+                            )
+                            Text(
+                                "Prediksi Pengukuran Tinggi Badan melalui  Foto Anak",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            navigator.navigateToHeightMeasurement()
+                        },
+                        shape = RoundedCornerShape(4.dp),
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Text("Prediksi Tinggi Badan")
+                    }
+                }
             }
         }
     }
 
-    // TODO
-
-//    if (updateState) {
-//        LaunchedEffect(key1 = updateState) {
-//            val response =
-//                viewModel.updateChildren(children.data.id, weight.toFloat(), height.toInt())
-//            if (response.status == "success") {
-//                navigator.backNavigation()
-//                Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
-//                updateState = false
-//            } else {
-//                Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
-//                updateState = false
-//            }
-//        }
-//    }
 }

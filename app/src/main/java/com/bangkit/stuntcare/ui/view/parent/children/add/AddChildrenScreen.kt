@@ -12,10 +12,12 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -96,6 +99,9 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
 import java.util.Objects
+import com.bangkit.stuntcare.R
+import com.bangkit.stuntcare.ui.theme.Green600
+import com.bangkit.stuntcare.ui.theme.Grey100
 
 @Composable
 fun AddChildrenScreen(
@@ -146,6 +152,7 @@ fun AddChildrenContent(
     ) {
         if (it != null) {
             currentImageUri = it
+            isDialogImageShow = !isDialogImageShow
         } else {
             showToast("Tidak ada gambar dipilih", context)
         }
@@ -158,6 +165,7 @@ fun AddChildrenContent(
     ) {
         if (it) {
             currentImageUri = uri
+            isDialogImageShow = !isDialogImageShow
         }
     }
 
@@ -167,7 +175,7 @@ fun AddChildrenContent(
         val (topBar, imgChildren, tfName, tfBirthDate, tvGenderOptions, rgGenderOptions, tfWeight, tfHeight, btnUpload, dialog) = createRefs()
 
         TopAppBar(
-            title = { Text(text = "Update") },
+            title = { Text(text = "Tambahkan Anak") },
             navigationIcon = {
                 IconButton(onClick = { navigator.backNavigation() }) { // TODO
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
@@ -181,15 +189,18 @@ fun AddChildrenContent(
         )
 
         AsyncImage(
-            model = if (currentImageUri != null) currentImageUri else null,
+            model = if (currentImageUri != null) currentImageUri else "",
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Inside,
+            placeholder = painterResource(id = R.drawable.ic_camera),
+            error = painterResource(id = R.drawable.ic_camera),
             modifier = modifier
                 .clip(CircleShape)
                 .size(150.dp)
                 .clickable {
                     isDialogImageShow = true
                 }
+                .background(Grey100)
                 .constrainAs(imgChildren) {
                     top.linkTo(topBar.bottom, margin = 16.dp)
                     start.linkTo(parent.start)
@@ -384,15 +395,18 @@ fun AddChildrenContent(
                     }
                 }
             },
+            contentPadding = PaddingValues(8.dp),
+            shape = RoundedCornerShape(4.dp),
             modifier = modifier
                 .padding(8.dp)
+                .fillMaxWidth()
                 .constrainAs(btnUpload) {
                     top.linkTo(tfHeight.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
         ) {
-            Text(text = "UPDATE", fontWeight = FontWeight.Medium, fontSize = 16.sp)
+            Text(text = "TAMBAHKAN", fontWeight = FontWeight.Medium, fontSize = 16.sp)
         }
 
         AnimatedVisibility(visible = isDialogImageShow, modifier = modifier.constrainAs(dialog) {

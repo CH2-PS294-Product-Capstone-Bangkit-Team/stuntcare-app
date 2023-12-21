@@ -76,6 +76,7 @@ import com.bangkit.stuntcare.ui.theme.Grey100
 import com.bangkit.stuntcare.ui.theme.Yellow600
 import com.bangkit.stuntcare.ui.utils.convertDateAndLongToAge
 import com.bangkit.stuntcare.ui.utils.dateToDay
+import com.bangkit.stuntcare.ui.utils.removeTrailingZeros
 import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
@@ -414,12 +415,12 @@ fun ChildrenDataSection(
         ) {
             ChildrenBoxInfo(
                 title = "Tinggi Badan",
-                data = children.data.growthHistory.first().height.toString(),
+                data = removeTrailingZeros(children.data.growthHistory.first().height).toString(),
                 unit = "cm"
             )
             ChildrenBoxInfo(
                 title = "Berat Badan",
-                data = children.data.growthHistory.first().weight.toString(),
+                data = removeTrailingZeros(children.data.growthHistory.first().weight).toString(),
                 unit = "kg"
             )
             ChildrenBoxInfo(

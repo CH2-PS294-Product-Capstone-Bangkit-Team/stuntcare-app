@@ -71,7 +71,11 @@ sealed class Screen (val route: String){
     // Register
     object Register: Screen("register")
 
+
+    // Model Machine Learning
     object FoodClassification: Screen("food_classification")
+
+    object HeightMeasurement: Screen("height_measurement")
 
     object WelcomePage: Screen("welcome_page")
 }

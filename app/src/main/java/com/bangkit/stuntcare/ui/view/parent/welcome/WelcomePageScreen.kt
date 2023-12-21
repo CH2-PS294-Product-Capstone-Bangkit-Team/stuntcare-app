@@ -67,10 +67,6 @@ fun WelcomePageScreen(
 
     val pagerState = rememberPagerState()
 
-
-    val titleArray = arrayOf(R.array.title)
-    val description = arrayOf(R.array.description)
-
     val listImageSlider = listOf(
         ImageSlider(
             R.drawable.img_slider_1,

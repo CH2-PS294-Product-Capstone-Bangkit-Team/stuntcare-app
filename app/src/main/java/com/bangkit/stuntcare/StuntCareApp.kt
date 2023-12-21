@@ -62,6 +62,7 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.bangkit.stuntcare.ui.view.parent.children.add.AddChildrenScreen
 import com.bangkit.stuntcare.ui.view.parent.children.food_classification.FoodClassificationScreen
+import com.bangkit.stuntcare.ui.view.parent.children.high_measurement.HighMeasurementScreen
 import com.bangkit.stuntcare.ui.view.parent.children.history.GrowthHistoryScreen
 import com.bangkit.stuntcare.ui.view.parent.children.main.ChildrenScreen
 import com.bangkit.stuntcare.ui.view.parent.children.profile.ChildrenProfileScreen
@@ -152,6 +153,7 @@ fun StuntCareApp(
             composable(
                 route = Screen.Children.route
             ) {
+                val height = it.savedStateHandle.get<Float?>("height")
                 ChildrenScreen(navigator = ChildrenScreenNavigator(navController = navController))
             }
 
@@ -272,6 +274,12 @@ fun StuntCareApp(
 
             composable(Screen.FoodClassification.route){
                 FoodClassificationScreen()
+            }
+
+            composable(Screen.HeightMeasurement.route){
+                HighMeasurementScreen(
+                    childrenScreenNavigator = ChildrenScreenNavigator(navController)
+                )
             }
 
             composable(Screen.WelcomePage.route){
