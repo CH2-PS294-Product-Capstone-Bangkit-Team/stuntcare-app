@@ -23,6 +23,16 @@ class HomePageScreenNavigator(private val navController: NavController) {
         }
     }
 
+    fun navigateToChildPageWithId(childrenId: String){
+        navController.navigate(Screen.ChildrenWithId.createRoute(childrenId)){
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     fun navigateToMenu(menuId: Int) {
         navController.navigate(Screen.Menu.createRoute(menuId))
     }

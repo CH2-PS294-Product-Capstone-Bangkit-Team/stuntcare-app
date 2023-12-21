@@ -7,12 +7,5 @@ import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 fun RoomChatScreen(
     navigator: ConsultationScreenNavigator
 ) {
-    RoomChatContent(navigator = navigator)
-}
 
-@Composable
-fun RoomChatContent(
-    navigator: ConsultationScreenNavigator
-) {
-   // TODO
 }

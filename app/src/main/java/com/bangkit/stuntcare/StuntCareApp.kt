@@ -295,6 +295,14 @@ fun StuntCareApp(
                     navigateToLoginScreen = { navController.navigate(Screen.Login.route) },
                     navigateToRegisterScreen = { navController.navigate(Screen.Register.route) })
             }
+
+            composable(
+                route = Screen.ChildrenWithId.route,
+                arguments = listOf(navArgument("childrenId"){type = NavType.StringType})
+            ){
+                val id = it.arguments?.getString("childrenId") ?: ""
+                ChildrenScreen(navigator = ChildrenScreenNavigator(navController), childrenId = id)
+            }
         }
     }
 }

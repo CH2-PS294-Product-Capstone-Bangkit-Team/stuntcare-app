@@ -93,7 +93,6 @@ fun HomePageScreen(
                 )
 
             }
-
             is UiState.Error -> {}
         }
     }
@@ -264,7 +263,7 @@ fun ChildListSection(
                     statusStunting = response.stunting.message
                 }
 
-                CardChild(children = child, status = statusStunting)
+                CardChild(children = child, status = statusStunting, modifier = modifier.clickable { homePageScreenNavigator.navigateToChildPage() })
             }
 
             Box(
