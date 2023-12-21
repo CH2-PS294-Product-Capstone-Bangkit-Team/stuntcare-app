@@ -3,10 +3,12 @@ package com.bangkit.stuntcare.data.remote
 import com.bangkit.stuntcare.data.remote.response.ApiResponse
 import com.bangkit.stuntcare.data.remote.response.ApiResponse2
 import com.bangkit.stuntcare.data.remote.response.ChildItem
+import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
+import com.bangkit.stuntcare.data.remote.response.FoodRecommendationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.data.remote.response.UserResponse
 import com.bangkit.stuntcare.ui.model.ChildrenPost
@@ -110,4 +112,26 @@ interface ApiService {
     suspend fun getHighMeasurement(
         @Part file: MultipartBody.Part
     ): HighMeasurementPrediction
+
+    @FormUrlEncoded
+    @POST("recommendation")
+    suspend fun getFoodRecommendation(
+        @Field("user_id") userId: Int = 1
+    ): FoodRecommendationResponse
+
+    @Multipart
+    @POST("user/{userId}/child/{childrenId}/menuharian")
+    suspend fun addFoodChildren(
+        @Path("userId") userId: String?,
+        @Path("childrenId") childrenId: String,
+        @Part file: MultipartBody.Part,
+        @Part("food_name") foodName: RequestBody,
+        @Part("schedule") schedule: RequestBody
+    ): ApiResponse2
+
+    @GET("user/{userId}/child/{childrenId}/menuharian")
+    suspend fun getFoodChildren(
+        @Path("childrenId") childrenId: String,
+        @Path("userId") userId: String?
+    ): ChildrenFoodResponse
 }

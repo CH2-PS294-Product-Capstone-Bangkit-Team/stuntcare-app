@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -20,17 +21,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.ui.theme.Blue600
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
 
 @Composable
 fun FoodRecommendationCard(
-
+    foodName: String,
+    openDetail: () -> Unit
 ) {
     Card {
         Row(
@@ -44,7 +49,9 @@ fun FoodRecommendationCard(
             AsyncImage(
                 model = "",
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
+                error = painterResource(id = R.drawable.placeholder_image),
+                placeholder = painterResource(id = R.drawable.placeholder_image),
                 modifier = Modifier
                     .size(44.dp)
                     .clip(
@@ -55,7 +62,7 @@ fun FoodRecommendationCard(
             Column(
                 verticalArrangement = Arrangement.SpaceAround,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(horizontal = 26.dp)
+                modifier = Modifier.padding(start = 8.dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -63,7 +70,7 @@ fun FoodRecommendationCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text ="Jenis Makanan", fontSize = 8.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "Kandungan Nutrisi", fontSize = 8.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = foodName, fontSize = 8.sp, fontWeight = FontWeight.SemiBold, overflow = TextOverflow.Ellipsis, maxLines = 1, modifier = Modifier.padding(start = 8.dp))
                 }
 
                 Row(
@@ -71,7 +78,7 @@ fun FoodRecommendationCard(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Nama Makanan", fontSize = 8.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "Kandungan Nutrisi", fontSize = 8.sp, fontWeight = FontWeight.SemiBold)
                     Button(
                         onClick = { /*TODO*/ },
                         contentPadding = PaddingValues(horizontal = 12.dp),
@@ -91,13 +98,5 @@ fun FoodRecommendationCard(
             }
 
         }
-    }
-}
-
-@Preview
-@Composable
-fun FoodRecomendationCardPreview() {
-    StuntCareTheme {
-        FoodRecommendationCard()
     }
 }

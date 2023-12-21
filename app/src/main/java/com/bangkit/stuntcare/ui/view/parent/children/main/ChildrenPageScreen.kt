@@ -1,5 +1,6 @@
 package com.bangkit.stuntcare.ui.view.parent.children.main
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -57,12 +58,16 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.data.remote.response.ChildItem
+import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
+import com.bangkit.stuntcare.data.remote.response.FoodRecommendationResponse
+import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.CardChild
 import com.bangkit.stuntcare.ui.component.ChildrenBoxInfo
 import com.bangkit.stuntcare.ui.component.FoodCard
+import com.bangkit.stuntcare.ui.component.FoodRecommendationCard
 import com.bangkit.stuntcare.ui.component.NutritionIndicator
 import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.theme.Blue100
@@ -75,10 +80,12 @@ import com.bangkit.stuntcare.ui.theme.Green700
 import com.bangkit.stuntcare.ui.theme.Grey100
 import com.bangkit.stuntcare.ui.theme.Yellow600
 import com.bangkit.stuntcare.ui.utils.convertDateAndLongToAge
+import com.bangkit.stuntcare.ui.utils.convertLongToDateString
 import com.bangkit.stuntcare.ui.utils.dateToDay
 import com.bangkit.stuntcare.ui.utils.removeTrailingZeros
 import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
+import com.google.gson.Gson
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
@@ -89,6 +96,7 @@ import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import retrofit2.HttpException
 import java.util.Date
 
 @Composable
@@ -104,7 +112,7 @@ fun ChildrenScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = context){
+    LaunchedEffect(key1 = context) {
         viewModel.getAllChildren()
     }
 
@@ -118,7 +126,7 @@ fun ChildrenScreen(
             is UiState.Success -> {
                 val listChild = childItem.data
 
-                LaunchedEffect(key1 = childrenId ?: listChild.first().id){
+                LaunchedEffect(key1 = childrenId ?: listChild.first().id) {
                     viewModel.getChildrenById(childrenId ?: listChild.first().id)
                 }
                 viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
@@ -144,7 +152,7 @@ fun ChildrenScreen(
                                 statusChildren = response
                             }
 
-                            if (statusChildren != null){
+                            if (statusChildren != null) {
                                 ChildrenTestScreen(
                                     navigator = navigator,
                                     allChildren = listChild,
@@ -276,7 +284,14 @@ fun ChildrenTestScreen(
                             statusStunting = response.stunting.message
                         }
 
-                        CardChild(children = child, status = statusStunting)
+                        CardChild(
+                            children = child,
+                            status = statusStunting,
+                            modifier = modifier.clickable {
+                                viewModel.getChildrenById(child.id)
+                                showListChildren = !showListChildren
+                            }
+                        )
                     }
                 }
             }
@@ -340,7 +355,7 @@ fun ChildrenTestScreen(
         Row(
             modifier = modifier.padding(top = 8.dp)
         ) {
-            Text(text = "Statistik Perkmebangan",
+            Text(text = "Statistik Perkembangan",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 12.sp,
                 color = if (statisticRowSelected) {
@@ -357,7 +372,7 @@ fun ChildrenTestScreen(
                     .weight(1f)
                     .padding(horizontal = 26.dp, vertical = 8.dp))
             Text(
-                text = "Statistik Perkmebangan",
+                text = "Catatan Harian Anak",
                 fontWeight = FontWeight.SemiBold,
                 color = if (!statisticRowSelected) {
                     Blue900
@@ -379,10 +394,16 @@ fun ChildrenTestScreen(
             GrowthStatistic(
                 children = children,
                 statusChildren = statusChildren,
-                navigator = navigator
+                navigator = navigator,
+                viewModel = viewModel
             )
         } else {
-            DailyChildren(navigator = navigator)
+            DailyChildren(
+                navigator = navigator,
+                children = children,
+                statusChildren = statusChildren,
+                viewModel = viewModel
+            )
         }
     }
 }
@@ -392,6 +413,7 @@ fun GrowthStatistic(
     children: DetailChildrenResponse,
     navigator: ChildrenScreenNavigator,
     statusChildren: ChildrenStatusResponse,
+    viewModel: ChildrenViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -407,7 +429,11 @@ fun GrowthStatistic(
         // Line Chart TODO
         ChildrenStatisticSection(children = children)
 
-        ChildrenDiagnosisSection(statusChildren = statusChildren, navigator = navigator)
+        ChildrenDiagnosisSection(
+            statusChildren = statusChildren,
+            navigator = navigator,
+            viewModel = viewModel
+        )
     }
 }
 
@@ -533,6 +559,7 @@ fun ChildrenStatisticSection(
 @Composable
 fun ChildrenDiagnosisSection(
     statusChildren: ChildrenStatusResponse,
+    viewModel: ChildrenViewModel,
     navigator: ChildrenScreenNavigator,
     modifier: Modifier = Modifier,
 ) {
@@ -579,7 +606,7 @@ fun ChildrenDiagnosisSection(
                 )
                 Text(
                     text = "Status Stunting",
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier
                         .weight(0.5f)
@@ -587,7 +614,7 @@ fun ChildrenDiagnosisSection(
                 )
                 Text(
                     text = ":",
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier
                         .weight(0.1f)
@@ -608,7 +635,7 @@ fun ChildrenDiagnosisSection(
                     ) {
                         Text(
                             text = statusChildren.stunting.message,
-                            fontSize = 12.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
                             style = TextStyle(
                                 shadow = Shadow(
@@ -671,7 +698,7 @@ fun ChildrenDiagnosisSection(
                 )
                 Text(
                     text = "Status Underweight",
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier
@@ -680,7 +707,7 @@ fun ChildrenDiagnosisSection(
                 )
                 Text(
                     text = ":",
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier.weight(0.1f)
                 )
@@ -699,7 +726,7 @@ fun ChildrenDiagnosisSection(
                     ) {
                         Text(
                             text = statusChildren.underweight.message,
-                            fontSize = 12.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
                             style = TextStyle(
                                 shadow = Shadow(
@@ -764,7 +791,7 @@ fun ChildrenDiagnosisSection(
                 )
                 Text(
                     text = "Status Wasting",
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     maxLines = 1,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier
@@ -773,7 +800,7 @@ fun ChildrenDiagnosisSection(
                 )
                 Text(
                     text = ":",
-                    fontSize = 12.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier.weight(0.1f)
                 )
@@ -792,7 +819,7 @@ fun ChildrenDiagnosisSection(
                     ) {
                         Text(
                             text = statusChildren.wasted.message,
-                            fontSize = 12.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold,
                             style = TextStyle(
                                 shadow = Shadow(
@@ -839,13 +866,58 @@ fun ChildrenDiagnosisSection(
             }
         }
     }
+    Card(
+        modifier.padding(28.dp)
+    ) {
+        FoodRecommendation(
+            viewModel = viewModel
+        )
+    }
+}
+
+@Composable
+fun FoodRecommendation(
+    viewModel: ChildrenViewModel
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp, vertical = 8.dp)
+    ) {
+        var foodRecommendation: FoodRecommendationResponse? by remember {
+            mutableStateOf(null)
+        }
+        Text(text = "Rekomendasi Makanan", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+
+        LaunchedEffect(key1 = LocalContext.current) {
+            val response = viewModel.getFoodRecommendation()
+            foodRecommendation = response
+        }
+
+        if (foodRecommendation != null) {
+            foodRecommendation?.name?.forEach {
+                FoodRecommendationCard(foodName = it) {
+
+                }
+            }
+        }
+
+    }
 }
 
 @Composable
 fun DailyChildren(
+    children: DetailChildrenResponse,
+    viewModel: ChildrenViewModel,
+    statusChildren: ChildrenStatusResponse,
     navigator: ChildrenScreenNavigator,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -854,7 +926,7 @@ fun DailyChildren(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Text(
-            text = "Update Terakhir: 12/12/1221",
+            text = "Update Terakhir: ${convertLongToDateString(children.data.growthHistory.first().createdAt)}",
             fontSize = 8.sp,
             fontWeight = FontWeight.SemiBold,
             color = Blue900,
@@ -926,28 +998,197 @@ fun DailyChildren(
                     fontWeight = FontWeight.Light,
                     modifier = modifier.padding(8.dp)
                 )
-                FoodCard(
-                    title = "Sarapan Pagi",
-                    foodName = "Seblak",
-                    image = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D",
-                    navigateToCamera = {navigator.navigateToFoodClassification()})
 
-                Spacer(modifier = Modifier.height(8.dp))
+                var childrenFoodData: ChildrenFoodResponse? by remember {
+                    mutableStateOf(null)
+                }
 
-                FoodCard(
-                    title = "Makan Siang",
-                    foodName = "Seblak",
-                    image = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D",
-                    navigateToCamera = {})
+                var isError: Boolean by remember {
+                    mutableStateOf(false)
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                LaunchedEffect(key1 = children.data.id) {
+                    try {
+                        childrenFoodData = viewModel.getChildrenFood2(children.data.id)
+                    } catch (e: HttpException) {
+                        val jsonInString = e.response()?.errorBody()?.string()
+                        val errorBody =
+                            Gson().fromJson(jsonInString, ChildrenFoodResponse::class.java)
+                        val errorMessage = errorBody.message
+                        showToast(errorMessage, context)
+                        Log.d("Update Children", "Response: $e")
+                        isError = true
+                    }
 
-                FoodCard(
-                    title = "Makan Malam",
-                    foodName = "Seblak",
-                    image = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8fA%3D%3D",
-                    navigateToCamera = {})
+                }
+
+                if (isError) {
+                    Column(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        FoodCard(
+                            title = "Sarapan Pagi",
+                            foodName = "Belum Diisi",
+                            image = "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                            navigateToCamera = {
+                                navigator.navigateToFoodClassification(
+                                    children.data.id,
+                                    "Makan Siang"
+                                )
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        FoodCard(
+                            title = "Makan Siang",
+                            foodName = "Belum Diisi",
+                            image = "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                            navigateToCamera = {
+                                navigator.navigateToFoodClassification(
+                                    children.data.id,
+                                    "Makan Siang"
+                                )
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        FoodCard(
+                            title = "Makan Malam",
+                            foodName = "Belum Diisi",
+                            image = "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                            navigateToCamera = {
+                                navigator.navigateToFoodClassification(
+                                    children.data.id,
+                                    "Makan Siang"
+                                )
+                            }
+                        )
+                    }
+                } else {
+                    if (childrenFoodData != null) {
+                        val data = childrenFoodData!!.data
+                        var makanSiang by remember {
+                            mutableStateOf(true)
+                        }
+
+                        var makanMalam by remember {
+                            mutableStateOf(true)
+                        }
+
+                        var sarapanPagi by remember {
+                            mutableStateOf(true)
+                        }
+                        Column(
+                            modifier = modifier.fillMaxWidth()
+                        ) {
+                            data.food.forEach {
+                                if (it.schedule == "Sarapan Pagi") {
+                                    sarapanPagi = false
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    FoodCard(
+                                        title = it.schedule,
+                                        foodName = it.foodName,
+                                        image = it.imageUrl
+                                            ?: "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                                        navigateToCamera = {
+                                            showToast("Anda Telah Mengisi Makanan Ini", context)
+                                        }
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    FoodCard(
+                                        title = "Sarapan Pagi",
+                                        foodName = "Belum Diisi",
+                                        image = "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                                        navigateToCamera = {
+                                            navigator.navigateToFoodClassification(
+                                                children.data.id,
+                                                "Makan Siang"
+                                            )
+                                        }
+                                    )
+                                }
+
+                                if (it.schedule == "Makan Siang") {
+                                    makanSiang = false
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    FoodCard(
+                                        title = it.schedule,
+                                        foodName = it.foodName,
+                                        image = it.imageUrl
+                                            ?: "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                                        navigateToCamera = {
+                                            showToast("Anda Telah Mengisi Makanan Ini", context)
+                                        }
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    FoodCard(
+                                        title = "Makan Siang",
+                                        foodName = "Belum Diisi",
+                                        image = "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                                        navigateToCamera = {
+                                            navigator.navigateToFoodClassification(
+                                                children.data.id,
+                                                "Makan Siang"
+                                            )
+                                        }
+                                    )
+                                }
+
+                                if (it.schedule == "Makan Malam") {
+                                    makanMalam = false
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    FoodCard(
+                                        title = it.schedule,
+                                        foodName = it.foodName,
+                                        image = it.imageUrl
+                                            ?: "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                                        navigateToCamera = {
+                                            showToast("Anda Telah Mengisi Makanan Ini", context)
+                                        }
+                                    )
+                                }else{
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    FoodCard(
+                                        title = "Makan Malam",
+                                        foodName = "Belum Diisi",
+                                        image = "https://theme-assets.getbento.com/sensei/cc1b795.sensei/assets/images/catering-item-placeholder-704x520.png",
+                                        navigateToCamera = {
+                                            navigator.navigateToFoodClassification(
+                                                children.data.id,
+                                                "Makan Siang"
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                viewModel.childrenFood.collectAsState(initial = UiState.Loading).value.let {
+                    when (it) {
+                        is UiState.Loading -> {
+                            LaunchedEffect(key1 = convertLongToDateString(children.data.growthHistory.first().createdAt)) {
+                                viewModel.getChildrenFood(children.data.id)
+                            }
+                        }
+
+                        is UiState.Success -> {
+                            val data = it.data.data
+
+                        }
+
+                        is UiState.Error -> {
+
+                        }
+                    }
+                }
             }
         }
+
     }
 }

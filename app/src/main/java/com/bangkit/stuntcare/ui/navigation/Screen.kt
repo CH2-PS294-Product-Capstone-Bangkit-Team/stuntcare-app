@@ -73,7 +73,9 @@ sealed class Screen (val route: String){
 
 
     // Model Machine Learning
-    object FoodClassification: Screen("food_classification")
+    object FoodClassification: Screen("food_classification/{childrenId}/{schedule}"){
+        fun createRoute(childrenId: String, schedule: String) = "food_classification/$childrenId/$schedule"
+    }
 
     object HeightMeasurement: Screen("height_measurement")
 

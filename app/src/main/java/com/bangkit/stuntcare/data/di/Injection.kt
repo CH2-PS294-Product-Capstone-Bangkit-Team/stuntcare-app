@@ -14,19 +14,22 @@ object Injection {
         val baseUrlGetStatus = "https://stunting-status-nts3atbn5q-de.a.run.app/"
         val baseUrlFoodClassification = "https://food-classification-nts3atbn5q-de.a.run.app/"
         val baseUrlHighMeasurement = "https://height-prediction-nts3atbn5q-de.a.run.app/"
+        val baseUrlFoodRecommendation = "https://food-recommendation-nts3atbn5q-de.a.run.app/"
         val pref = UserPreference.getInstance(context.dataStore)
-        val apiServiceFromCc = ApiConfig.getApiService( baseUrlFromCc)
-        val apiServiceGetStatus = ApiConfig.getApiService( baseUrlGetStatus)
+        val apiServiceFromCc = ApiConfig.getApiService(baseUrlFromCc)
+        val apiServiceGetStatus = ApiConfig.getApiService(baseUrlGetStatus)
         val apiServiceFoodClassification =
-            ApiConfig.getApiService( baseUrlFoodClassification)
-        val apiServiceHighMeasurement = ApiConfig.getApiService( baseUrlHighMeasurement)
+            ApiConfig.getApiService(baseUrlFoodClassification)
+        val apiServiceHighMeasurement = ApiConfig.getApiService(baseUrlHighMeasurement)
+        val apiServiceFoodRecommendation = ApiConfig.getApiService(baseUrlFoodRecommendation)
 
         return DataRepository.getInstance(
             userPreference = pref,
             apiServiceFromCc = apiServiceFromCc,
             apiServiceGetStatus = apiServiceGetStatus,
             apiServiceFoodClassification = apiServiceFoodClassification,
-            apiServiceHighMeasurement = apiServiceHighMeasurement
+            apiServiceHighMeasurement = apiServiceHighMeasurement,
+            apiServiceFoodRecommendation = apiServiceFoodRecommendation
         )
     }
 }

@@ -7,10 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bangkit.stuntcare.data.DataRepository
+import com.bangkit.stuntcare.data.remote.response.ApiResponse2
 import com.bangkit.stuntcare.data.remote.response.ChildItem
+import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
+import com.bangkit.stuntcare.data.remote.response.FoodRecommendationResponse
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.model.children.Children
 import com.bangkit.stuntcare.ui.utils.showToast
@@ -22,6 +25,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class ChildrenViewModel(val repository: DataRepository) : ViewModel() {
 
@@ -69,7 +74,33 @@ class ChildrenViewModel(val repository: DataRepository) : ViewModel() {
         weight: Float,
         height: Float
     ): ChildrenStatusResponse {
-            return repository.statusChildren(age, gender, weight, height)
+        return repository.statusChildren(age, gender, weight, height)
     }
+
+    suspend fun getFoodRecommendation(): FoodRecommendationResponse {
+        return repository.getFoodRecommendation()
+    }
+
+    private val _childrenFood: MutableStateFlow<UiState<ChildrenFoodResponse>> =
+        MutableStateFlow(UiState.Loading)
+    val childrenFood: MutableStateFlow<UiState<ChildrenFoodResponse>> = _childrenFood
+
+
+    suspend fun getChildrenFood(childrenId: String) {
+        viewModelScope.launch {
+            repository.getChildrenFood(childrenId)
+                .catch {
+                    _childrenFood.value = UiState.Error(it.message.toString())
+                }
+                .collect {
+                    _childrenFood.value = UiState.Success(it)
+                }
+        }
+    }
+
+    suspend fun getChildrenFood2(childrenId: String): ChildrenFoodResponse {
+        return repository.getChildrenFood2(childrenId)
+    }
+
 
 }

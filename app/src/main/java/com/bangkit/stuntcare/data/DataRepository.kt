@@ -8,10 +8,12 @@ import com.bangkit.stuntcare.data.remote.ApiService
 import com.bangkit.stuntcare.data.remote.response.ApiResponse
 import com.bangkit.stuntcare.data.remote.response.ApiResponse2
 import com.bangkit.stuntcare.data.remote.response.ChildItem
+import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.DetailChildrenResponse
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
+import com.bangkit.stuntcare.data.remote.response.FoodRecommendationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.data.remote.response.UserResponse
 import com.bangkit.stuntcare.ui.model.ChildrenPost
@@ -38,7 +40,8 @@ class DataRepository(
     private val apiServiceFromCc: ApiService,
     private val apiServiceGetStunting: ApiService,
     private val apiServiceFoodClassification: ApiService,
-    private val apiServiceHighMeasurement: ApiService
+    private val apiServiceHighMeasurement: ApiService,
+    private val apiServiceFoodRecommendation: ApiService
 ) {
     private val childList = mutableListOf<Children>()
     private val doctorList = mutableListOf<Doctor>()
@@ -87,6 +90,18 @@ class DataRepository(
                 childrenId,
             )
         )
+    }
+
+    suspend fun addChildrenFood(childrenId: String, image: MultipartBody.Part, foodName: RequestBody, schedule: RequestBody): ApiResponse2{
+         return apiServiceFromCc.addFoodChildren(auth.currentUser?.uid, childrenId, image, foodName, schedule)
+    }
+
+    suspend fun getChildrenFood(childrenId: String): Flow<ChildrenFoodResponse> {
+        return flowOf(apiServiceFromCc.getFoodChildren(childrenId, auth.currentUser?.uid))
+    }
+
+    suspend fun getChildrenFood2(childrenId: String): ChildrenFoodResponse {
+        return apiServiceFromCc.getFoodChildren(childrenId, auth.currentUser?.uid)
     }
 
     suspend fun updateChildren(id: String, image: MultipartBody.Part, name: RequestBody, weight: RequestBody, height: RequestBody): ApiResponse2 {
@@ -186,6 +201,10 @@ class DataRepository(
         return apiServiceHighMeasurement.getHighMeasurement(image)
     }
 
+    suspend fun getFoodRecommendation(): FoodRecommendationResponse{
+        return apiServiceFoodRecommendation.getFoodRecommendation()
+    }
+
     // Chat Feature
     fun showChat(userId: String) {
         firestore
@@ -202,7 +221,8 @@ class DataRepository(
             apiServiceFromCc: ApiService,
             apiServiceGetStatus: ApiService,
             apiServiceFoodClassification: ApiService,
-            apiServiceHighMeasurement: ApiService
+            apiServiceHighMeasurement: ApiService,
+            apiServiceFoodRecommendation: ApiService
         ): DataRepository =
             instance ?: synchronized(this) {
                 DataRepository(
@@ -210,7 +230,8 @@ class DataRepository(
                     apiServiceFromCc,
                     apiServiceGetStatus,
                     apiServiceFoodClassification,
-                    apiServiceHighMeasurement
+                    apiServiceHighMeasurement,
+                    apiServiceFoodRecommendation
                 ).also {
                     instance = it
                 }

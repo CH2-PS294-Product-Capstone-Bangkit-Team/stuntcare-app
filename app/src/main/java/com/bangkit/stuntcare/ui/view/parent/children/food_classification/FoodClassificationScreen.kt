@@ -2,6 +2,7 @@ package com.bangkit.stuntcare.ui.view.parent.children.food_classification
 
 import android.Manifest
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,17 +47,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
+import com.bangkit.stuntcare.data.remote.response.ApiResponse2
+import com.bangkit.stuntcare.data.remote.response.ChildrenFoodResponse
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ImageDialogPicker
 import com.bangkit.stuntcare.ui.component.ShowLoading
+import com.bangkit.stuntcare.ui.navigation.navigator.ChildrenScreenNavigator
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
 import com.bangkit.stuntcare.ui.utils.checkPermission
 import com.bangkit.stuntcare.ui.utils.getImageUri
 import com.bangkit.stuntcare.ui.utils.reduceFileImage
 import com.bangkit.stuntcare.ui.utils.removeTrailingZeros
 import com.bangkit.stuntcare.ui.utils.showToast
+import com.bangkit.stuntcare.ui.utils.stringToMediaType
 import com.bangkit.stuntcare.ui.utils.uriToFile
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.google.gson.Gson
@@ -66,18 +71,25 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
 @Composable
 fun FoodClassificationScreen(
+    childrenId: String,
+    schedule: String,
+    navigator: ChildrenScreenNavigator,
     viewModel: FoodClassificationViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
         factory = ViewModelFactory.getInstance(LocalContext.current)
     ),
     modifier: Modifier = Modifier
 ) {
     FoodClassificationContent(
+        childrenId = childrenId,
+        navigator = navigator,
+        schedule = schedule,
         viewModel = viewModel
     )
 }
@@ -85,6 +97,9 @@ fun FoodClassificationScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FoodClassificationContent(
+    childrenId: String,
+    schedule: String,
+    navigator: ChildrenScreenNavigator,
     viewModel: FoodClassificationViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -97,9 +112,14 @@ fun FoodClassificationContent(
         mutableStateOf(false)
     }
 
-    var foodClassificationData: FoodClassificationResponse? by remember {
+    var multipartBody: MultipartBody.Part? by remember {
         mutableStateOf(null)
     }
+
+    var foodName by remember {
+        mutableStateOf("Nama Makanan")
+    }
+
     var isDialogImageShow by remember { mutableStateOf(false) }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -137,7 +157,7 @@ fun FoodClassificationContent(
         TopAppBar(
             title = { Text(text = "Ambil Gambar Makanan") },
             navigationIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { navigator.backNavigation() }) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                 }
             }
@@ -149,18 +169,13 @@ fun FoodClassificationContent(
                 .verticalScroll(rememberScrollState())
                 .padding(vertical = 12.dp, horizontal = 16.dp)
         ) {
+            Text(text = "${childrenId} $schedule")
             Text(
                 text = "Pastikan mengambil gambar makanan dengan kecerahan yang baik",
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = modifier.padding(bottom = 12.dp)
             )
-
-            if (foodClassificationData != null) {
-                if (foodClassificationData?.data != null) {
-                    Text(text = foodClassificationData?.data?.category.toString())
-                }
-            }
 
             AsyncImage(
                 model = if (currentImageUri != null) currentImageUri else "https://blog.eigeradventure.com/wp-content/uploads/2022/07/tips-foto-aesthetics-2.jpg",
@@ -195,7 +210,7 @@ fun FoodClassificationContent(
                     modifier = modifier
                 )
                 Text(
-                    text = "Nama Makanan",
+                    text = foodName,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
                     modifier = modifier
@@ -227,7 +242,27 @@ fun FoodClassificationContent(
 
             Button(
                 onClick = {
-                   // TODO
+                    scope.launch {
+                        val foodNameBody: RequestBody = stringToMediaType(foodName)
+                        val scheduleBody: RequestBody = stringToMediaType(schedule)
+
+                        if (multipartBody != null){
+                            try {
+                                val response = viewModel.addFoodChildren(childrenId, multipartBody!!, foodNameBody, scheduleBody)
+                                if (!response.status){
+                                    showToast(response.message, context)
+                                    navigator.backNavigation()
+                                }
+                            }catch (e: HttpException){
+                                val jsonInString = e.response()?.errorBody()?.string()
+                                val errorBody =
+                                    Gson().fromJson(jsonInString, ApiResponse2::class.java)
+                                val errorMessage = errorBody.message
+                                showToast(errorMessage, context)
+                                Log.d("Update Children", "Response: $e")
+                            }
+                        }
+                    }
                 },
                 shape = RoundedCornerShape(12.dp),
                 modifier = modifier.padding(vertical = 12.dp)
@@ -267,18 +302,20 @@ fun FoodClassificationContent(
                     val requestImageFile =
                         imageFile.asRequestBody("image/jpeg".toMediaType())
 
-                    val multipartBody = MultipartBody.Part.createFormData(
+                    multipartBody = MultipartBody.Part.createFormData(
                         "image",
                         imageFile.name,
                         requestImageFile
                     )
                     scope.launch {
-                        val response = viewModel.getFoodClassification(multipartBody)
-
-                        if (response.data != null){
-                            showToast(response.data.category, context)
-                        }else{
-                            showToast(response.status.message, context)
+                        if (multipartBody != null){
+                            val response = viewModel.getFoodClassification(multipartBody!!)
+                            if (response.data != null){
+                                foodName = response.data.category
+                                showToast("Klasifikasi Berhasil", context)
+                            }else{
+                                showToast(response.status.message, context)
+                            }
                         }
                     }
                 }

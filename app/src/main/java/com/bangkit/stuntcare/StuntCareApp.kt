@@ -163,8 +163,8 @@ fun StuntCareApp(
 
             composable(
                 route = Screen.HistoryGrowthChildren.route,
-                arguments = listOf(navArgument("childrenId"){type = NavType.StringType})
-            ){
+                arguments = listOf(navArgument("childrenId") { type = NavType.StringType })
+            ) {
                 val id = it.arguments?.getString("childrenId")
                 GrowthHistoryScreen(
                     childrenId = id,
@@ -174,8 +174,8 @@ fun StuntCareApp(
 
             composable(
                 route = Screen.ProfileChildren.route,
-                arguments = listOf(navArgument("childrenId"){type = NavType.StringType})
-            ){
+                arguments = listOf(navArgument("childrenId") { type = NavType.StringType })
+            ) {
                 val id = it.arguments?.getString("childrenId")
                 ChildrenProfileScreen(
                     childrenId = id,
@@ -266,23 +266,31 @@ fun StuntCareApp(
                 )
             }
 
-            composable(Screen.Register.route){
+            composable(Screen.Register.route) {
                 RegisterScreen(
                     navigateToLogin = { navController.navigate(Screen.Login.route) }
                 )
             }
 
-            composable(Screen.FoodClassification.route){
-                FoodClassificationScreen()
+            composable(
+                route = Screen.FoodClassification.route,
+                arguments = listOf(
+                    navArgument("childrenId") { type = NavType.StringType },
+                    navArgument("schedule") { type = NavType.StringType }
+                )
+            ) {
+                val childrenId = it.arguments?.getString("childrenId") ?: ""
+                val schedule = it.arguments?.getString("schedule") ?: ""
+                FoodClassificationScreen(childrenId, schedule, ChildrenScreenNavigator(navController))
             }
 
-            composable(Screen.HeightMeasurement.route){
+            composable(Screen.HeightMeasurement.route) {
                 HighMeasurementScreen(
                     childrenScreenNavigator = ChildrenScreenNavigator(navController)
                 )
             }
 
-            composable(Screen.WelcomePage.route){
+            composable(Screen.WelcomePage.route) {
                 WelcomePageScreen(
                     navigateToLoginScreen = { navController.navigate(Screen.Login.route) },
                     navigateToRegisterScreen = { navController.navigate(Screen.Register.route) })

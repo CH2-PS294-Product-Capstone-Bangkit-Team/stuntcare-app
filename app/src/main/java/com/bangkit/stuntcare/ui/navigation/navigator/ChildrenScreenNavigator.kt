@@ -21,8 +21,8 @@ class ChildrenScreenNavigator (val navController: NavController){
         navController.navigate(Screen.ProfileChildren.createRoute(id))
     }
 
-    fun navigateToFoodClassification(){
-        navController.navigate(Screen.FoodClassification.route)
+    fun navigateToFoodClassification(childrenId: String, schedule: String){
+        navController.navigate(Screen.FoodClassification.createRoute(childrenId, schedule))
     }
 
     fun navigateToHeightMeasurement(){
