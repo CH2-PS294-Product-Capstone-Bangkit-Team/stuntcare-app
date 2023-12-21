@@ -37,24 +37,12 @@ class HomeViewModel(private val repository: DataRepository) : ViewModel() {
         }
     }
 
-    val statusChildren: MutableStateFlow<UiState<ChildrenStatusResponse>> =
-        MutableStateFlow(UiState.Loading)
-
     suspend fun getStatusChildren(
         age: Int,
         gender: String,
         weight: Float,
         height: Float
-    ){
-
-        viewModelScope.launch {
-            repository.statusChildren(age, gender, weight, height)
-                .catch {
-                    statusChildren.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    statusChildren.value = UiState.Success(it)
-                }
-        }
+    ): ChildrenStatusResponse {
+          return  repository.statusChildren(age, gender, weight, height)
     }
 }

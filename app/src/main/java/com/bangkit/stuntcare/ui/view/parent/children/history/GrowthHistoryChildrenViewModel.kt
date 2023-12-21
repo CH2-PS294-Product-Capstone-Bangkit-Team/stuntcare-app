@@ -23,11 +23,6 @@ class GrowthHistoryChildrenViewModel(private val repository: DataRepository) : V
     val childrenById: StateFlow<UiState<DetailChildrenResponse>>
         get() = _childrenById
 
-    private val _statusChildren: MutableStateFlow<UiState<ChildrenStatusResponse>> =
-        MutableStateFlow(UiState.Loading)
-    val statusChildren: StateFlow<UiState<ChildrenStatusResponse>>
-        get() = _statusChildren
-
 
     fun getAllChildren() {
         viewModelScope.launch {
@@ -58,15 +53,7 @@ class GrowthHistoryChildrenViewModel(private val repository: DataRepository) : V
         gender: String,
         weight: Float,
         height: Float
-    ) {
-        viewModelScope.launch {
-            repository.statusChildren(age, gender, weight, height)
-                .catch {
-                    _statusChildren.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _statusChildren.value = UiState.Success(it)
-                }
-        }
+    ): ChildrenStatusResponse {
+            return repository.statusChildren(age, gender, weight, height)
     }
 }

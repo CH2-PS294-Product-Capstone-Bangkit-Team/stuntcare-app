@@ -116,6 +116,7 @@ fun FoodClassificationContent(
     ) {
         if (it != null) {
             currentImageUri = it
+            isDialogImageShow = !isDialogImageShow
         } else {
             showToast("Tidak ada gambar dipilih", context)
         }
@@ -127,6 +128,7 @@ fun FoodClassificationContent(
         contract = ActivityResultContracts.TakePicture()
     ) {
         if (it) {
+            isDialogImageShow = !isDialogImageShow
             currentImageUri = uri
         }
     }
@@ -225,7 +227,7 @@ fun FoodClassificationContent(
 
             Button(
                 onClick = {
-
+                   // TODO
                 },
                 shape = RoundedCornerShape(12.dp),
                 modifier = modifier.padding(vertical = 12.dp)
@@ -271,43 +273,14 @@ fun FoodClassificationContent(
                         requestImageFile
                     )
                     scope.launch {
-                        viewModel.getFoodClassification.value.let {
-                            when (it) {
-                                is UiState.Loading -> {
-                                    viewModel.getFoodClassification(multipartBody)
-                                    isLoading = true
-                                }
+                        val response = viewModel.getFoodClassification(multipartBody)
 
-                                is UiState.Success -> {
-                                    try {
-                                        val response = it.data
-                                        if (response.data != null) {
-                                            showToast(response.data.category, context)
-                                        } else {
-                                            showToast(response.status.message, context)
-                                        }
-                                    } catch (e: HttpException) {
-                                        val jsonInString = e.response()?.errorBody()?.string()
-                                        val errorBody = Gson().fromJson(
-                                            jsonInString,
-                                            FoodClassificationResponse::class.java
-                                        )
-                                        val errorMessage = errorBody.status.message
-                                        showToast(errorMessage, context)
-
-                                    } finally {
-                                        isLoading = false
-                                    }
-                                }
-
-                                is UiState.Error -> {
-                                    showToast("Silahkan Masukkan Gambar Yang Valid", context)
-                                    isLoading = false
-                                }
-                            }
+                        if (response.data != null){
+                            showToast(response.data.category, context)
+                        }else{
+                            showToast(response.status.message, context)
                         }
                     }
-
                 }
             }
         }

@@ -130,34 +130,28 @@ fun ChildrenScreen(
                             val child = it.data
                             val gender = if (child.data.gender == "Laki-laki") "Boy" else "Girl"
 
-                            viewModel.statusChildren.collectAsState().value.let {
-                                when (it) {
-                                    is UiState.Loading -> {
-                                        scope.launch {
-                                            viewModel.getStatusChildren(
-                                                dateToDay(child.data.birthDay),
-                                                gender,
-                                                23f,
-                                                60f
-                                            )
-                                        }
-                                    }
+                            var statusChildren: ChildrenStatusResponse? by remember {
+                                mutableStateOf(null)
+                            }
 
-                                    is UiState.Success -> {
-                                        val statusChildren = it.data
-                                        ChildrenTestScreen(
-                                            navigator = navigator,
-                                            allChildren = listChild,
-                                            children = child,
-                                            statusChildren = statusChildren,
-                                            viewModel = viewModel
-                                        )
-                                    }
+                            LaunchedEffect(key1 = child) {
+                                val response = viewModel.getStatusChildren(
+                                    dateToDay(child.data.birthDay),
+                                    gender,
+                                    child.data.growthHistory.first().weight,
+                                    child.data.growthHistory.first().height,
+                                )
+                                statusChildren = response
+                            }
 
-                                    is UiState.Error -> {
-
-                                    }
-                                }
+                            if (statusChildren != null){
+                                ChildrenTestScreen(
+                                    navigator = navigator,
+                                    allChildren = listChild,
+                                    children = child,
+                                    statusChildren = statusChildren!!,
+                                    viewModel = viewModel
+                                )
                             }
                         }
 
@@ -268,37 +262,21 @@ fun ChildrenTestScreen(
                 LazyColumn {
                     items(allChildren, { it.id }) { child ->
                         val gender = if (child.gender == "Laki-laki") "Boy" else "Girl"
-
-                        viewModel.statusChildren.collectAsState().value.let {
-                            when (it) {
-                                is UiState.Loading -> {
-                                    scope.launch {
-                                        viewModel.getStatusChildren(
-                                            dateToDay(child.birthDay),
-                                            gender,
-                                            23f,
-                                            60f
-                                        )
-                                    }
-                                }
-
-                                is UiState.Success -> {
-                                    val statusChildren = it.data
-                                    CardChild(
-                                        children = child,
-                                        status = statusChildren.stunting.message,
-                                        modifier = modifier.clickable {
-                                            viewModel.getChildrenById(child.id)
-                                            showListChildren = false
-                                        }
-                                    )
-                                }
-
-                                is UiState.Error -> {
-
-                                }
-                            }
+                        var statusStunting by remember {
+                            mutableStateOf("")
                         }
+
+                        LaunchedEffect(key1 = child) {
+                            val response = viewModel.getStatusChildren(
+                                dateToDay(child.birthDay),
+                                gender,
+                                child.weight,
+                                child.height
+                            )
+                            statusStunting = response.stunting.message
+                        }
+
+                        CardChild(children = child, status = statusStunting)
                     }
                 }
             }

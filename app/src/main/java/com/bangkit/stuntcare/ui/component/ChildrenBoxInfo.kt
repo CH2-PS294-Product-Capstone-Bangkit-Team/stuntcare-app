@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bangkit.stuntcare.ui.theme.Blue500
+import com.bangkit.stuntcare.ui.theme.Blue800
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
 
 @Composable
@@ -53,7 +54,7 @@ fun ChildrenBoxInfo(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = modifier
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(Blue800)
                     .fillMaxWidth()
             ) {
                 Text(

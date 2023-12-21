@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bangkit.stuntcare.data.DataRepository
+import com.bangkit.stuntcare.data.remote.response.ChildrenStatusResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,19 +14,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
 class HighMeasurementPredictionViewModel(private val repository: DataRepository): ViewModel() {
-
-    private val _getHeight: MutableStateFlow<UiState<HighMeasurementPrediction>> = MutableStateFlow(UiState.Loading)
-    val getHeight: StateFlow<UiState<HighMeasurementPrediction>>
-        get() = _getHeight
-    fun getHeightMeasurementPrediction(image: MultipartBody.Part) {
-        viewModelScope.launch {
-            repository.getHeightMeasurementPrediction(image)
-                .catch {
-                    _getHeight.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _getHeight.value = UiState.Success(it)
-                }
-        }
+    suspend fun getHeightMeasurementPrediction(image: MultipartBody.Part): HighMeasurementPrediction {
+            return repository.getHeightMeasurementPrediction(image)
     }
 }

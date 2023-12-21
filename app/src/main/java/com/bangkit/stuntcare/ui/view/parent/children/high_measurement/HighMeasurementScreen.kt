@@ -2,6 +2,7 @@ package com.bangkit.stuntcare.ui.view.parent.children.high_measurement
 
 import android.Manifest
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
+import com.bangkit.stuntcare.data.remote.response.ApiResponse2
 import com.bangkit.stuntcare.data.remote.response.FoodClassificationResponse
 import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.ui.common.UiState
@@ -67,6 +69,7 @@ import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.utils.uriToFile
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaType
@@ -261,38 +264,21 @@ fun HighMeasurementScreen(
                         imageFile.name,
                         requestImageFile
                     )
-                    viewModel.getHeight.value.let {
-                        when (it) {
-                            is UiState.Loading -> {
-                                viewModel.getHeightMeasurementPrediction(multipartBody)
-                                isLoading = true
-                            }
 
-                            is UiState.Success -> {
-                                try {
-                                    val response = it.data
-                                    if (response.status == "success") {
-                                        showToast(response.message, context)
-                                    } else {
-                                        showToast("Data Belum Berhasil Ditambahkan", context)
-                                    }
-                                    heightMeasurementPrediction = response.data.tinggiBadan
-                                    isLoading = false
-                                } catch (e: HttpException) {
-                                    isLoading = false
-                                    val jsonInString = e.response()?.errorBody()?.string()
-                                    val errorBody = Gson().fromJson(
-                                        jsonInString,
-                                        HighMeasurementPrediction::class.java
-                                    )
-                                    val errorMessage = errorBody.message
-                                    showToast(errorMessage, context)
-                                }
+                    scope.launch {
+                        try {
+                            val response = viewModel.getHeightMeasurementPrediction(multipartBody)
+                            if (response.status == "success"){
+                                heightMeasurementPrediction = response.data.tinggiBadan
+                            }else{
+                                showToast("Mohon Pastikan Gambar Yang Anda Masukkan Sudah Sesuai", context)
                             }
-
-                            is UiState.Error -> {
-                                showToast("Silahkan Masukkan Gambar Yang Valid", context)
-                            }
+                        }catch (e: HttpException){
+                            val jsonInString = e.response()?.errorBody()?.string()
+                            val errorBody = Gson().fromJson(jsonInString, HighMeasurementPrediction::class.java)
+                            val errorMessage = errorBody.message
+                            showToast(errorMessage, context)
+                            Log.d("Update Children", "Response: $e")
                         }
                     }
                 }

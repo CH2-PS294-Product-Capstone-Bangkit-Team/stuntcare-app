@@ -28,6 +28,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -246,38 +247,21 @@ fun GrowthTopBarSection(
                 LazyColumn {
                     items(data.child, { it.id }) { child ->
                         val gender = if (child.gender == "Laki-laki") "Boy" else "Girl"
-                        viewModel.statusChildren.collectAsState().value.let {
-                            when (it) {
-                                is UiState.Loading -> {
-                                    scope.launch {
-                                        viewModel.getStatusChildren(
-                                            dateToDay(child.birthDay),
-                                            gender,
-                                            23f,
-                                            60f
-                                        )
-                                    }
-                                }
-
-                                is UiState.Success -> {
-                                    val statusChildren = it.data
-                                    CardChild(
-                                        children = child,
-                                        status = statusChildren.stunting.message,
-                                        modifier = modifier.clickable {
-                                            viewModel.getChildrenById(child.id)
-                                            showListChildren = false
-                                        }
-                                    )
-                                }
-
-                                is UiState.Error -> {
-
-                                }
-                            }
+                        var statusStunting by remember {
+                            mutableStateOf("")
                         }
 
+                        LaunchedEffect(key1 = child) {
+                            val response = viewModel.getStatusChildren(
+                                dateToDay(child.birthDay),
+                                gender,
+                                child.weight,
+                                child.height
+                            )
+                            statusStunting = response.stunting.message
+                        }
 
+                        CardChild(children = child, status = statusStunting)
                     }
                 }
             }

@@ -34,8 +34,13 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -245,26 +250,21 @@ fun ChildListSection(
         ) {
             data.forEach { child ->
                 val gender = if (child.gender == "Laki-laki") "Boy" else "Girl"
-
-                viewModel.statusChildren.collectAsState(initial = UiState.Loading).value.let {
-                    when(it){
-                        is UiState.Loading -> {
-                            scope.launch {
-                                viewModel.getStatusChildren(dateToDay(child.birthDay), gender, 23f, 60f)
-                            }
-                        }
-
-                        is UiState.Success -> {
-                            val statusChildren = it.data
-                            CardChild(children = child, status = statusChildren.stunting.message)
-                        }
-
-                        is UiState.Error -> {
-
-                        }
-                    }
+                var statusStunting by remember {
+                    mutableStateOf("")
                 }
 
+                LaunchedEffect(key1 = child) {
+                    val response = viewModel.getStatusChildren(
+                        dateToDay(child.birthDay),
+                        gender,
+                        child.weight,
+                        child.height
+                    )
+                    statusStunting = response.stunting.message
+                }
+
+                CardChild(children = child, status = statusStunting)
             }
 
             Box(
@@ -287,7 +287,7 @@ fun ChildListSection(
                         text = "Tambahkan Profil Anak",
                         color = LocalContentColor.current,
                         fontWeight = FontWeight.Light,
-                        modifier = modifier.padding(horizontal = 12.dp)
+                        modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                     )
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -300,11 +300,12 @@ fun ChildListSection(
                     )
                 }
             }
-        }
 
+        }
     }
 
 }
+
 
 @Composable
 fun MenuItemSection(
