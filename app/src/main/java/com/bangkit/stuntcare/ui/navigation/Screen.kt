@@ -88,4 +88,6 @@ sealed class Screen (val route: String){
     object WelcomePage: Screen("welcome_page")
 
     object AruCoRules: Screen("aruco")
+
+    object Glide: Screen("glide")
 }

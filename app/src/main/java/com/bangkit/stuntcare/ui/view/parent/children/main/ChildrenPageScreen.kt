@@ -21,9 +21,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,6 +39,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
@@ -123,45 +126,50 @@ fun ChildrenScreen(
 
             is UiState.Success -> {
                 val listChild = childItem.data
-                viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
-                    when (it) {
-                        is UiState.Loading -> {
-                            viewModel.getChildrenById(childrenId ?: listChild.first().id)
-                        }
-
-                        is UiState.Success -> {
-                            val child = it.data
-                            val gender = if (child.data.gender == "Laki-laki") "Boy" else "Girl"
-
-                            var statusChildren: ChildrenStatusResponse? by remember {
-                                mutableStateOf(null)
+                if (listChild.isEmpty()){
+                   NoDisplay(navigator = navigator)
+                }else{
+                    viewModel.uiState.collectAsState(initial = UiState.Loading).value.let {
+                        when (it) {
+                            is UiState.Loading -> {
+                                viewModel.getChildrenById(childrenId ?: listChild.first().id)
                             }
 
-                            LaunchedEffect(key1 = child) {
-                                val response = viewModel.getStatusChildren(
-                                    dateToDay(child.data.birthDay),
-                                    gender,
-                                    child.data.growthHistory.first().weight,
-                                    child.data.growthHistory.first().height,
-                                )
-                                statusChildren = response
+                            is UiState.Success -> {
+                                val child = it.data
+                                val gender = if (child.data.gender == "Laki-laki") "Boy" else "Girl"
+
+                                var statusChildren: ChildrenStatusResponse? by remember {
+                                    mutableStateOf(null)
+                                }
+
+                                LaunchedEffect(key1 = child) {
+                                    val response = viewModel.getStatusChildren(
+                                        dateToDay(child.data.birthDay),
+                                        gender,
+                                        child.data.growthHistory.first().weight,
+                                        child.data.growthHistory.first().height,
+                                    )
+                                    statusChildren = response
+                                }
+
+                                if (statusChildren != null) {
+                                    ChildrenTestScreen(
+                                        navigator = navigator,
+                                        allChildren = listChild,
+                                        children = child,
+                                        statusChildren = statusChildren!!,
+                                        viewModel = viewModel
+                                    )
+                                }
                             }
 
-                            if (statusChildren != null) {
-                                ChildrenTestScreen(
-                                    navigator = navigator,
-                                    allChildren = listChild,
-                                    children = child,
-                                    statusChildren = statusChildren!!,
-                                    viewModel = viewModel
-                                )
+                            is UiState.Error -> {
+                                showToast(it.errorMessage, context)
                             }
-                        }
-
-                        is UiState.Error -> {
-                            showToast(it.errorMessage, context)
                         }
                     }
+
                 }
             }
 
@@ -175,7 +183,7 @@ fun ChildrenScreen(
 @Composable
 fun NoDisplay(navigator: ChildrenScreenNavigator, modifier: Modifier = Modifier) {
     ConstraintLayout(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize().padding(24.dp)
     ) {
         val (tvDataEmpty, btnAddChildren) = createRefs()
         Text(
@@ -183,6 +191,7 @@ fun NoDisplay(navigator: ChildrenScreenNavigator, modifier: Modifier = Modifier)
             fontWeight = FontWeight.Medium,
             fontSize = 24.sp,
             maxLines = 2,
+            textAlign = TextAlign.Center,
             modifier = modifier.constrainAs(tvDataEmpty) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start, margin = 12.dp)
@@ -227,8 +236,11 @@ fun ChildrenTestScreen(
     var statisticRowSelected by remember {
         mutableStateOf(true)
     }
-
     val scope = rememberCoroutineScope()
+
+    var confirmDeleteChildren by remember {
+        mutableStateOf(false)
+    }
 
     Column(
         modifier = modifier.verticalScroll(rememberScrollState())
@@ -256,9 +268,45 @@ fun ChildrenTestScreen(
                         text = { Text(text = "Edit Profil Anak") },
                         onClick = { navigator.navigateToEditProfileChildren(children.data.id) }
                     )
+
+                    DropdownMenuItem(
+                        text = { Text(text = "Delete Children") },
+                        onClick = { /*TODO*/ })
                 }
             }
         )
+
+
+        if (confirmDeleteChildren) {
+            AlertDialog(
+                icon = {
+                       Icon(
+                           imageVector = Icons.Default.Delete,
+                           contentDescription = null,
+                           modifier = modifier.size(40.dp)
+                       )
+                },
+                title = {
+                        Text(text = "Kamu Yakin Ingin Menghapus Data Ini?")
+                },
+                text = {
+                    Text(text = "Konfimarsi Pengahpusan")
+                },
+                dismissButton = {
+                    confirmDeleteChildren = !confirmDeleteChildren
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            /*TODO*/
+                        }
+                    ) {
+                        Text("Confirm")
+                    }
+                },
+                onDismissRequest = { confirmDeleteChildren = !confirmDeleteChildren }
+            )
+        }
 
         if (showListChildren) {
             ModalBottomSheet(onDismissRequest = { showListChildren = !showListChildren }) {
@@ -1230,26 +1278,6 @@ fun DailyChildren(
                                     )
                                 }
                             }
-                        }
-                    }
-                }
-
-
-                viewModel.childrenFood.collectAsState(initial = UiState.Loading).value.let {
-                    when (it) {
-                        is UiState.Loading -> {
-                            LaunchedEffect(key1 = convertLongToDateString(children.data.growthHistory.first().createdAt)) {
-                                viewModel.getChildrenFood(children.data.id)
-                            }
-                        }
-
-                        is UiState.Success -> {
-                            val data = it.data.data
-
-                        }
-
-                        is UiState.Error -> {
-
                         }
                     }
                 }

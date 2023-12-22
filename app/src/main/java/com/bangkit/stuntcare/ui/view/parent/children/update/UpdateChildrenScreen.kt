@@ -143,6 +143,17 @@ fun UpdateChildrenContent(
                     )
 
                     OutlinedTextField(
+                        value = height,
+                        label = { Text(text = "Tinggi Badan") },
+                        onValueChange = { height = it },
+                        trailingIcon = {
+                            Text(text = "cm")
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = modifier.fillMaxWidth()
+                    )
+
+                    OutlinedTextField(
                         value = weight,
                         label = { Text(text = "Berat Badan") },
                         onValueChange = { weight = it },
@@ -153,16 +164,7 @@ fun UpdateChildrenContent(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = modifier.fillMaxWidth()
                     )
-                    OutlinedTextField(
-                        value = height,
-                        label = { Text(text = "Tinggi Badan") },
-                        onValueChange = { height = it },
-                        trailingIcon = {
-                            Text(text = "cm")
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = modifier.fillMaxWidth()
-                    )
+
                     Button(
                         onClick = {
                             try {

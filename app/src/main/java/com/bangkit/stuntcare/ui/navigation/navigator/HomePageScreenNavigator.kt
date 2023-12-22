@@ -2,9 +2,11 @@ package com.bangkit.stuntcare.ui.navigation.navigator
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import com.bangkit.stuntcare.switchTabs
 import com.bangkit.stuntcare.ui.navigation.Screen
 
-class HomePageScreenNavigator(private val navController: NavController) {
+class HomePageScreenNavigator(private val navController: NavHostController) {
     fun navigateToNotificationPage() {
         navController.navigate(Screen.Notification.route)
     }
@@ -34,7 +36,7 @@ class HomePageScreenNavigator(private val navController: NavController) {
     }
 
     fun navigateToMenu(menuId: Int) {
-        navController.navigate(Screen.Menu.createRoute(menuId))
+        navController.switchTabs(menuId)
     }
 
     fun navigateToArticlePage() {
@@ -77,4 +79,3 @@ class HomePageScreenNavigator(private val navController: NavController) {
         navController.navigate(Screen.AddChildren.route)
     }
 }
-

@@ -304,6 +304,9 @@ fun AddChildrenContent(
             onValueChange = {
                 weight = it
             },
+            trailingIcon = {
+                Text(text = "KG")
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = modifier
                 .fillMaxWidth()
@@ -334,9 +337,6 @@ fun AddChildrenContent(
                 label = { Text(text = "Tinggi Badan") },
                 onValueChange = {
                     height = it
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
                 },
                 trailingIcon = {
                     Text(text = "CM")

@@ -29,11 +29,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.bangkit.stuntcare.R
 import com.bangkit.stuntcare.data.di.Injection
 import com.bangkit.stuntcare.data.remote.response.DoctorResponse
 import com.bangkit.stuntcare.ui.common.UiState
@@ -91,7 +93,7 @@ fun ConsultationContent(
                 SearchBar(query = query, onQueryChange = onQueryChange, modifier.weight(0.9f))
                 IconButton(onClick = { navigator.navigateToChatScreen() }) {
                     Icon(
-                        imageVector = Icons.Default.ShoppingCart,
+                        painter = painterResource(id = R.drawable.ic_chat),
                         contentDescription = null,
                         modifier = modifier
                             .size(60.dp)

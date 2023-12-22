@@ -81,26 +81,15 @@ class ChildrenViewModel(val repository: DataRepository) : ViewModel() {
         return repository.getFoodRecommendation()
     }
 
-    private val _childrenFood: MutableStateFlow<UiState<ChildrenFoodResponse>> =
-        MutableStateFlow(UiState.Loading)
-    val childrenFood: MutableStateFlow<UiState<ChildrenFoodResponse>> = _childrenFood
-
-
-    suspend fun getChildrenFood(childrenId: String) {
-        viewModelScope.launch {
-            repository.getChildrenFood(childrenId)
-                .catch {
-                    _childrenFood.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _childrenFood.value = UiState.Success(it)
-                }
-        }
-    }
-
     suspend fun getChildrenFood2(childrenId: String): ChildrenFoodResponse {
         return repository.getChildrenFood2(childrenId)
     }
+
+
+    suspend fun deleteChildren(childrenId: String): ApiResponse2 {
+        return repository.deleteChildren(childrenId)
+    }
+
 
 
 }

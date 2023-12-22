@@ -29,14 +29,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.bangkit.stuntcare.ui.component.DisplayOnDevelopment
 import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 
 @Composable
 fun ChatScreen(
     navigator: ConsultationScreenNavigator
 ) {
-    ChatContent(navigator = navigator)
+    DisplayOnDevelopment()
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

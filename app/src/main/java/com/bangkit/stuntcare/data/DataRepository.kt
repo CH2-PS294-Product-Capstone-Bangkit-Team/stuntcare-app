@@ -94,6 +94,10 @@ class DataRepository(
         )
     }
 
+    suspend fun deleteChildren(childrenId: String): ApiResponse2{
+        return apiServiceFromCc.deleteChildren(auth.currentUser?.uid, childrenId)
+    }
+
     suspend fun addChildrenFood(childrenId: String, image: MultipartBody.Part, foodName: RequestBody, schedule: RequestBody): ApiResponse2{
          return apiServiceFromCc.addFoodChildren(auth.currentUser?.uid, childrenId, image, foodName, schedule)
     }
@@ -118,7 +122,7 @@ class DataRepository(
 
     suspend fun updateChildren(id: String, weight: Float, height: Float): ApiResponse2 {
         // TODO
-        return apiServiceFromCc.updateGrowthChildren(userId = auth.currentUser?.uid, childrenId = id, height = weight, weight =  height)
+        return apiServiceFromCc.updateGrowthChildren(userId = auth.currentUser?.uid, childrenId = id, height = height, weight =  weight)
     }
 
     suspend fun statusChildren(
@@ -185,12 +189,12 @@ class DataRepository(
         return FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
     }
 
-    suspend fun register(user: User): Flow<ApiResponse2> {
-        return flowOf(apiServiceFromCc.register(user))
+    suspend fun register(user: User): ApiResponse2 {
+        return apiServiceFromCc.register(user)
     }
 
     suspend fun logout() {
-        userPreference.logout()
+        return userPreference.logout()
     }
 
     suspend fun getFoodClassification(image: MultipartBody.Part): FoodClassificationResponse{

@@ -276,8 +276,9 @@ fun ChildrenProfileContent(
                 value = weight,
                 label = { Text(text = "Berat Badan") },
                 onValueChange = { weight = it },
+                readOnly = true,
                 trailingIcon = {
-                    Text(text = "cm")
+                    Text(text = "kg")
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = modifier.fillMaxWidth()
@@ -286,8 +287,9 @@ fun ChildrenProfileContent(
                 value = height,
                 label = { Text(text = "Tinggi Badan") },
                 onValueChange = { height = it },
+                readOnly = true,
                 trailingIcon = {
-                    Text(text = "kg")
+                    Text(text = "cm")
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = modifier.fillMaxWidth()

@@ -178,9 +178,11 @@ fun FoodClassificationContent(
             )
 
             AsyncImage(
-                model = if (currentImageUri != null) currentImageUri else "https://blog.eigeradventure.com/wp-content/uploads/2022/07/tips-foto-aesthetics-2.jpg",
+                model = if (currentImageUri != null) currentImageUri else "",
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
+                error = painterResource(id = R.drawable.image_placeholder),
+                placeholder = painterResource(id = R.drawable.image_placeholder),
                 modifier = modifier
                     .fillMaxWidth()
                     .size(454.dp)
@@ -246,14 +248,19 @@ fun FoodClassificationContent(
                         val foodNameBody: RequestBody = stringToMediaType(foodName)
                         val scheduleBody: RequestBody = stringToMediaType(schedule)
 
-                        if (multipartBody != null){
+                        if (multipartBody != null) {
                             try {
-                                val response = viewModel.addFoodChildren(childrenId, multipartBody!!, foodNameBody, scheduleBody)
-                                if (!response.status){
+                                val response = viewModel.addFoodChildren(
+                                    childrenId,
+                                    multipartBody!!,
+                                    foodNameBody,
+                                    scheduleBody
+                                )
+                                if (!response.status) {
                                     showToast(response.message, context)
                                     navigator.backNavigation()
                                 }
-                            }catch (e: HttpException){
+                            } catch (e: HttpException) {
                                 val jsonInString = e.response()?.errorBody()?.string()
                                 val errorBody =
                                     Gson().fromJson(jsonInString, ApiResponse2::class.java)
@@ -294,9 +301,9 @@ fun FoodClassificationContent(
                 )
             }
 
-            ShowLoading(state = isLoading)
 
             LaunchedEffect(key1 = currentImageUri) {
+                isLoading = true
                 currentImageUri?.let {
                     val imageFile = uriToFile(it, context).reduceFileImage()
                     val requestImageFile =
@@ -308,18 +315,30 @@ fun FoodClassificationContent(
                         requestImageFile
                     )
                     scope.launch {
-                        if (multipartBody != null){
-                            val response = viewModel.getFoodClassification(multipartBody!!)
-                            if (response.data != null){
-                                foodName = response.data.category
-                                showToast("Klasifikasi Berhasil", context)
-                            }else{
-                                showToast(response.status.message, context)
+                        try {
+                            if (multipartBody != null) {
+                                val response = viewModel.getFoodClassification(multipartBody!!)
+                                if (response.data != null) {
+                                    foodName = response.data.category
+                                    showToast("Klasifikasi Berhasil", context)
+                                } else {
+                                    showToast(response.status.message, context)
+                                }
                             }
+                        } catch (e: HttpException) {
+                            val jsonInString = e.response()?.errorBody()?.string()
+                            val errorBody =
+                                Gson().fromJson(jsonInString, HighMeasurementPrediction::class.java)
+                            val errorMessage = errorBody.message
+                            showToast(errorMessage, context)
+                            Log.d("Update Children", "Response: $e")
+                        } finally {
+                            isLoading = false
                         }
                     }
                 }
             }
+            ShowLoading(state = isLoading)
         }
     }
 }

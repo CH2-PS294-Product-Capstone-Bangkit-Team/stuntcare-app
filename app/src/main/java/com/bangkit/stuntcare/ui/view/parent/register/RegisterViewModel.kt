@@ -19,15 +19,7 @@ class RegisterViewModel(private val repository: DataRepository) : ViewModel() {
         get() = _uiState
 
 
-    fun registerUser(user: User) {
-        viewModelScope.launch {
-            repository.register(user)
-                .catch {
-                    _uiState.value = UiState.Error(it.message.toString())
-                }
-                .collect {
-                    _uiState.value = UiState.Success(it)
-                }
-        }
+    suspend fun registerUser(user: User): ApiResponse2 {
+            return repository.register(user)
     }
 }

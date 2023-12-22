@@ -59,6 +59,7 @@ import com.bangkit.stuntcare.ui.navigation.navigator.CommunityScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ConsultationScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
+import com.bangkit.stuntcare.ui.view.GlideSplashScreen
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.bangkit.stuntcare.ui.view.parent.children.add.AddChildrenScreen
 import com.bangkit.stuntcare.ui.view.parent.children.food_classification.FoodClassificationScreen
@@ -114,7 +115,7 @@ fun StuntCareApp(
         NavHost(
             navController = navController,
             startDestination = if (currentUser == null) {
-                Screen.WelcomePage.route
+                Screen.Glide.route
             } else {
                 Screen.HomePage.route
             },
@@ -122,17 +123,16 @@ fun StuntCareApp(
         ) {
             // Home Page Route
             composable(Screen.HomePage.route) {
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult(),
-                    onResult = {
-                        if (it.resultCode == RESULT_OK) {
-                        }
-                    }
-                )
                 HomePageScreen(
                     homePageScreenNavigator = HomePageScreenNavigator(navController)
                 )
 
+            }
+
+            composable(Screen.Glide.route){
+                GlideSplashScreen(
+                    navigateToHomePage = { navController.navigate(Screen.HomePage.route) },
+                    navigateToWelcome = { navController.navigate(Screen.WelcomePage.route) })
             }
 
             composable(Screen.Notification.route) {
@@ -141,55 +141,6 @@ fun StuntCareApp(
 
             composable(Screen.Profile.route) {
                 ProfileScreen(navigator = ProfileScreenNavigator(navController = navController))
-            }
-
-            composable(
-                route = Screen.Menu.route,
-                arguments = listOf(navArgument("menuId") { type = NavType.IntType })
-            ) {
-                val id = it.arguments?.getInt("menuId") ?: -1
-
-                when (id) {
-                    1 -> {
-                        navController.navigate(Screen.Children.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-
-                    2 -> {
-                        navController.navigate(Screen.Children.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-
-                    3 -> {
-                        navController.navigate(Screen.Community.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-
-                    4 -> {
-                        navController.navigate(Screen.Community.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
             }
 
 
@@ -347,9 +298,18 @@ fun StuntCareApp(
                     navigateToLoginScreen = { navController.navigate(Screen.Login.route) },
                     navigateToRegisterScreen = { navController.navigate(Screen.Register.route) })
             }
-            
-            composable(Screen.AruCoRules.route){
+
+            composable(Screen.AruCoRules.route) {
                 AruCoRulesScreen(navigator = ChildrenScreenNavigator(navController))
+            }
+
+            composable(
+                route = Screen.Menu.route,
+                arguments = listOf(navArgument("menuId") { type = NavType.IntType })
+            ) {
+                val id = it.arguments?.getInt("menuId") ?: -1
+
+                navController.switchTabs(id)
             }
         }
     }
@@ -402,50 +362,38 @@ fun BottomBar(navController: NavHostController) {
     }
 }
 
-@Composable
-fun AddItem(
-    screen: NavigationItem,
-    currentDestination: NavDestination?,
-    navController: NavHostController
-) {
-    val selected = currentDestination?.hierarchy?.any { it.route == screen.screen.route } == true
-
-    val background =
-        if (selected) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f) else Color.Transparent
-
-    val contentColor =
-        if (selected) MaterialTheme.colorScheme.onSecondaryContainer else LocalContentColor.current
-
-    Box(
-        modifier = Modifier
-            .height(40.dp)
-            .clip(CircleShape)
-            .background(background)
-            .clickable(onClick = {
-                navController.navigate(screen.screen.route) {
-                    popUpTo(navController.graph.findStartDestination().id)
-                    launchSingleTop = true
+fun NavHostController.switchTabs(route: Int) {
+    when (route) {
+        1, 2 -> {
+            navigate(Screen.Children.route) {
+                popUpTo(graph.findStartDestination().id) {
+                    saveState = true
                 }
-            })
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Icon(
-                painter = screen.icon,
-                contentDescription = "icon",
-                tint = contentColor
-            )
-            AnimatedVisibility(visible = selected) {
-                Text(
-                    text = screen.title,
-                    color = contentColor,
-                    modifier = Modifier
-                )
+                launchSingleTop = true
+
+                restoreState = true
+            }
+        }
+
+        3 -> {
+            navigate(Screen.Consultation.route) {
+                popUpTo(graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+
+                restoreState = true
+            }
+        }
+
+        4 -> {
+            navigate(Screen.Community.route) {
+                popUpTo(graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+
+                restoreState = true
             }
         }
     }

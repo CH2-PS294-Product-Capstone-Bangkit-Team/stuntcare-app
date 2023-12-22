@@ -18,6 +18,7 @@ import com.bangkit.stuntcare.ui.view.parent.consultation.main.ConsultationViewMo
 import com.bangkit.stuntcare.ui.view.parent.consultation.schedule.SetScheduleViewModel
 import com.bangkit.stuntcare.ui.view.parent.home.HomeViewModel
 import com.bangkit.stuntcare.ui.view.parent.login.LoginViewModel
+import com.bangkit.stuntcare.ui.view.parent.profile.main.ProfileViewModel
 import com.bangkit.stuntcare.ui.view.parent.register.RegisterViewModel
 
 class ViewModelFactory(private val repository: DataRepository) :
@@ -81,6 +82,11 @@ class ViewModelFactory(private val repository: DataRepository) :
             modelClass.isAssignableFrom(HighMeasurementPredictionViewModel::class.java) -> {
                 HighMeasurementPredictionViewModel(repository) as T
             }
+
+            modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
+                ProfileViewModel(repository) as T
+            }
+
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

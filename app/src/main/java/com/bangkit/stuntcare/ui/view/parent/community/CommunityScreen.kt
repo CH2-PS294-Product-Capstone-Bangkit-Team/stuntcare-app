@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.bangkit.stuntcare.ui.component.DisplayOnDevelopment
 import com.bangkit.stuntcare.ui.component.SearchBar
 import com.bangkit.stuntcare.ui.model.Article
 import com.bangkit.stuntcare.ui.model.dummyArticle
@@ -39,7 +40,7 @@ fun CommunityScreen(
     navigator: CommunityScreenNavigator,
     modifier: Modifier = Modifier
 ) {
-    CommunityScreenContent(navigator = navigator)
+    DisplayOnDevelopment()
 }
 
 @Composable

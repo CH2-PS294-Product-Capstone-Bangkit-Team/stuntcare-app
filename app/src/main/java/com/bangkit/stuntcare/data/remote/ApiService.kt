@@ -19,6 +19,7 @@ import com.google.firebase.firestore.auth.User
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -50,6 +51,12 @@ interface ApiService {
     suspend fun getUser(
         @Path("id") userId: String?
     ): UserResponse
+
+    @DELETE("user/{userId}/child/{id}")
+    suspend fun deleteChildren(
+        @Path("userId") userId: String?,
+        @Path("id") childrenId: String
+    ): ApiResponse2
 
     @Multipart
     @POST("user/{id}/child")

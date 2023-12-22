@@ -5,7 +5,7 @@
     <string name="menu_consultation">Consultation</string>
     <string name="menu_community">Community</string>
     <string name="title_activity_home_page_screen">HomePageScreen</string>
-    <string name="welcome_homepage">Selamat %s, %s</string>
+    <string name="welcome_homepage">Selamat %s</string>
     <string name="artikel_stunting">Artikel Stunting</string>
     <string name="take_food_image">Ambil Gambar Makanan</string>
     <string name="default_web_client_id"></string>

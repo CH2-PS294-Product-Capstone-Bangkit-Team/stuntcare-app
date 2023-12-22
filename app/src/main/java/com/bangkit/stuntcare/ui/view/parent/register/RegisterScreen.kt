@@ -3,6 +3,7 @@ package com.bangkit.stuntcare.ui.view.parent.register
 import android.Manifest
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -84,6 +85,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.bangkit.stuntcare.R
+import com.bangkit.stuntcare.data.remote.response.HighMeasurementPrediction
 import com.bangkit.stuntcare.ui.common.UiState
 import com.bangkit.stuntcare.ui.component.ImageDialogPicker
 import com.bangkit.stuntcare.ui.model.User
@@ -96,6 +98,7 @@ import com.bangkit.stuntcare.ui.utils.reduceFileImage
 import com.bangkit.stuntcare.ui.utils.showToast
 import com.bangkit.stuntcare.ui.utils.uriToFile
 import com.bangkit.stuntcare.ui.view.ViewModelFactory
+import com.google.gson.Gson
 import com.marosseleng.compose.material3.datetimepickers.date.ui.dialog.DatePickerDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -178,6 +181,10 @@ fun RegisterContent(
         }
     }
     var register by remember {
+        mutableStateOf(false)
+    }
+
+    var isLoading by remember {
         mutableStateOf(false)
     }
 
@@ -355,6 +362,12 @@ fun RegisterContent(
                         },
                         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        isError = password != confirmPassword,
+                        supportingText = {
+                            if (password != confirmPassword) {
+                                Text(text = "Password Tidak Sama")
+                            }
+                        },
                         modifier = modifier
                             .fillMaxWidth()
                             .constrainAs(edtConfirmPassword) {
@@ -543,56 +556,45 @@ fun RegisterContent(
                             }
                         }
                     }
+
+
                     Button(
                         onClick = {
-                            currentImageUri?.let {
-                                val imageFile = uriToFile(it, context).reduceFileImage()
-                                val requestImageFile =
-                                    imageFile.asRequestBody("image/jpeg".toMediaType())
-                                val multipartBody = MultipartBody.Part.createFormData(
-                                    "photo",
-                                    imageFile.name,
-                                    requestImageFile
+                                val user = User(
+                                    email = email,
+                                    password = password,
+                                    name = fullName,
+                                    address = address,
+                                    gender = selectedGender,
+                                    birthDay = birthDate.toString(),
+                                    cellulerNumber = numberPhone,
+                                    status = selectedStatus
                                 )
 
                                 scope.launch {
                                     try {
                                         val response = withContext(Dispatchers.IO) {
-                                            // TODO
+                                            viewModel.registerUser(user)
+                                        }
+
+                                        if (!response.status) {
+                                            showToast(response.message, context)
+                                            navigateToLogin()
                                         }
                                     } catch (e: HttpException) {
-                                        // TODO
+                                        val jsonInString = e.response()?.errorBody()?.string()
+                                        val errorBody =
+                                            Gson().fromJson(
+                                                jsonInString,
+                                                HighMeasurementPrediction::class.java
+                                            )
+                                        val errorMessage = errorBody.message
+                                        showToast(errorMessage, context)
+                                        Log.d("Update Children", "Response: $e")
+                                    } finally {
+                                        isLoading = false
                                     }
                                 }
-                            }
-
-                            val user = User(
-                                email = email,
-                                password = password,
-                                name = fullName,
-                                address = address,
-                                gender = selectedGender,
-                                birthDay = birthDate.toString(),
-                                cellulerNumber = numberPhone,
-                                status = selectedStatus
-                            )
-
-                            viewModel.uiState.value.let {
-                                when(it){
-                                    is UiState.Loading -> {
-                                        viewModel.registerUser(user)
-                                    }
-                                    is UiState.Success -> {
-                                        val data = it.data
-                                        showToast(it.data.message, context)
-                                        navigateToLogin()
-                                    }
-                                    is UiState.Error -> {
-                                        showToast(it.errorMessage, context)
-                                    }
-                                }
-                            }
-
                         },
                         shape = RoundedCornerShape(0.dp),
                         modifier = modifier

@@ -30,11 +30,13 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,18 +46,26 @@ import com.bangkit.stuntcare.ui.component.SectionText
 import com.bangkit.stuntcare.ui.navigation.navigator.HomePageScreenNavigator
 import com.bangkit.stuntcare.ui.navigation.navigator.ProfileScreenNavigator
 import com.bangkit.stuntcare.ui.theme.StuntCareTheme
+import com.bangkit.stuntcare.ui.view.ViewModelFactory
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileScreen(navigator: ProfileScreenNavigator) {
-    ProfileContent(navigator = navigator)
+fun ProfileScreen(
+    navigator: ProfileScreenNavigator,
+    viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = ViewModelFactory.getInstance(LocalContext.current)
+    )
+) {
+    ProfileContent(navigator = navigator, viewModel = viewModel)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileContent(
     navigator: ProfileScreenNavigator,
+    viewModel: ProfileViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -77,7 +87,7 @@ fun ProfileContent(
         )
         ProfileCard()
         InformationContent(navigator = navigator)
-        PreferencesContent(navigator = navigator)
+        PreferencesContent(navigator = navigator, viewModel = viewModel)
     }
 }
 
@@ -120,14 +130,6 @@ fun ProfileCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileCardSPreview() {
-    StuntCareTheme {
-        ProfileCard()
-    }
-}
-
 @Composable
 fun InformationContent(
     navigator: ProfileScreenNavigator,
@@ -148,8 +150,10 @@ fun InformationContent(
 @Composable
 fun PreferencesContent(
     navigator: ProfileScreenNavigator,
+    viewModel: ProfileViewModel,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -164,9 +168,13 @@ fun PreferencesContent(
                 val auth = Firebase.auth
                 auth.signOut()
                 if (auth.currentUser == null){
+                    scope.launch {
+                        viewModel.logout()
+                    }
                     navigator.logOut()
                 }
-            })
+            }
+            )
         }
 
     }

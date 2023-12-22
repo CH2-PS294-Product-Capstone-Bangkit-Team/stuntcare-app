@@ -178,7 +178,7 @@ fun TopBarSection(
                     .padding(8.dp)
             )
             Text(
-                text = stringResource(R.string.welcome_homepage, "Datang", "Budi"), // TODO
+                text = stringResource(R.string.welcome_homepage, "Datang"), // TODO
                 fontSize = 12.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Medium,
@@ -275,12 +275,14 @@ fun ChildListSection(
                         color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(16.dp)
                     )
+                    .background(Color.White, RoundedCornerShape(16.dp))
                     .height(height = 150.dp)
                     .clickable { homePageScreenNavigator.navigateToAddChildren() }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
+                    modifier = modifier
                 ) {
                     Text(
                         text = "Tambahkan Profil Anak",
@@ -360,7 +362,7 @@ fun ArticleStuntingSection(
             items(dummyArticle, { it.id }) {
                 ArticleItem(
                     article = it,
-                    modifier.clickable { homePageScreenNavigator.navigateToDetailArticle(it.image.toLong()) }) // Tambahkan parameter id nya
+                    modifier.clickable {  }) // Tambahkan parameter id nya
             }
         }
     }
@@ -397,9 +399,7 @@ fun PostSection(
                 ArticleItem(
                     article = it,
                     modifier = modifier.clickable {
-                        homePageScreenNavigator.navigateToDetailPostPage(
-                            it.image.toLong()
-                        )
+
                     })  // Tambahakan Parameter Id nya
             }
         }
